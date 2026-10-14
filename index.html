@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generator RPM — Kurikulum Merdeka</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --primary:#1a3a5c; --accent:#c8832a; --light:#f5f2ec; --border:#d4c9b8; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'DM Sans',sans-serif; background:#f5f2ec; color:#1a1a1a; }
+  h1,h2,h3 { font-family:'Playfair Display',serif; }
+  .hero { background:linear-gradient(135deg,#1a3a5c 0%,#0d2540 100%); }
+  .form-card { background:white; border-radius:16px; box-shadow:0 4px 24px rgba(0,0,0,0.08); transition: all 0.3s ease; }
+  .input-field {
+    width:100%; padding:10px 14px; border:1.5px solid #d4c9b8; border-radius:8px;
+    font-family:'DM Sans',sans-serif; font-size:14px; color:#1a1a1a;
+    background:#fdfcfa; transition:all 0.2s;
+  }
+  .input-field:focus { outline:none; border-color:#1a3a5c; background:white; box-shadow:0 0 0 3px rgba(26,58,92,0.08); }
+  .label { font-size:13px; font-weight:500; color:#374151; margin-bottom:6px; display:block; }
+  .required::after { content:' *'; color:#dc2626; }
+
+  /* MULTI SELECT */
+  .multi-select { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+  .multi-select label {
+    display:flex; align-items:center; gap:6px; padding:7px 12px;
+    border:1.5px solid #d4c9b8; border-radius:20px; font-size:13px; cursor:pointer;
+    transition:all 0.2s; background:#fdfcfa; user-select:none;
+  }
+  .multi-select input[type="checkbox"] { display:none; }
+  .multi-select label:hover { border-color:#1a3a5c; background:#eef3f9; }
+  .multi-select label:has(input:checked) { background:#1a3a5c; border-color:#1a3a5c; color:white; }
+
+  /* CUSTOM INPUT DALAM MULTI SELECT */
+  .custom-input-wrap {
+    display:flex; align-items:center; gap:6px; padding:4px 4px 4px 10px;
+    border:1.5px dashed #c8832a; border-radius:20px; background:#fffaf4;
+  }
+  .custom-input-wrap input[type="text"] {
+    border:none; background:transparent; font-size:13px; color:#1a1a1a;
+    width:130px; outline:none; font-family:'DM Sans',sans-serif;
+  }
+  .custom-input-wrap input::placeholder { color:#b8a88a; }
+  .btn-add-custom {
+    background:#c8832a; color:white; border:none; border-radius:14px;
+    padding:4px 10px; font-size:12px; cursor:pointer; white-space:nowrap;
+    font-family:'DM Sans',sans-serif; font-weight:500; transition:all 0.15s;
+  }
+  .btn-add-custom:hover { background:#a96c1e; }
+  .custom-tag {
+    display:inline-flex; align-items:center; gap:5px; padding:5px 10px;
+    background:#fff3e0; border:1.5px solid #c8832a; border-radius:20px;
+    font-size:12px; color:#a96c1e; font-weight:500;
+  }
+  .custom-tag button {
+    background:none; border:none; color:#c8832a; cursor:pointer;
+    font-size:14px; line-height:1; padding:0 2px; font-weight:700;
+  }
+
+  /* INDIKATOR KINERJA */
+  .indikator-card {
+    border:1.5px solid #d4c9b8; border-radius:12px; overflow:hidden; margin-bottom:10px;
+    transition:all 0.2s;
+  }
+  .indikator-card.selected { border-color:#1a3a5c; box-shadow:0 0 0 3px rgba(26,58,92,0.08); }
+  .indikator-header {
+    display:flex; align-items:flex-start; gap:12px; padding:14px 16px;
+    cursor:pointer; background:#fdfcfa; transition:background 0.15s;
+  }
+  .indikator-header:hover { background:#eef3f9; }
+  .indikator-header input[type="checkbox"] {
+    width:18px; height:18px; accent-color:#1a3a5c; flex-shrink:0; margin-top:2px; cursor:pointer;
+  }
+  .indikator-label { font-size:13px; font-weight:600; color:#1a3a5c; line-height:1.5; }
+  .indikator-sub { font-size:11px; color:#6b7280; margin-top:2px; font-weight:400; }
+  .fokus-perilaku-wrap {
+    background:#f0f5fb; border-top:1px solid #d4e3f0; padding:12px 16px 14px 46px;
+    display:none;
+  }
+  .fokus-perilaku-wrap.show { display:block; }
+  .fokus-label { font-size:11px; font-weight:600; color:#1a3a5c; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px; }
+  .fokus-chips { display:flex; flex-wrap:wrap; gap:6px; }
+  .fokus-chip {
+    display:flex; align-items:center; gap:5px; padding:5px 11px;
+    border:1.5px solid #b8ccdf; border-radius:16px; font-size:12px; cursor:pointer;
+    background:white; transition:all 0.15s; color:#374151; user-select:none;
+  }
+  .fokus-chip input[type="checkbox"] { display:none; }
+  .fokus-chip:hover { border-color:#1a3a5c; background:#eef3f9; }
+  .fokus-chip:has(input:checked) { background:#1a3a5c; border-color:#1a3a5c; color:white; }
+
+  /* FOKUS SELECTED SUMMARY */
+  .fokus-summary {
+    margin-top:10px; padding:10px 14px; background:#fff8f0;
+    border:1px solid #f0d5b0; border-radius:8px; font-size:12px; color:#7a4f1a;
+    display:none;
+  }
+  .fokus-summary.show { display:block; }
+
+  /* BUTTONS */
+  .btn-primary {
+    background:#1a3a5c; color:white; padding:14px 32px; border-radius:10px;
+    font-family:'DM Sans',sans-serif; font-weight:600; font-size:15px; border:none;
+    cursor:pointer; transition:all 0.2s; display:inline-flex; align-items:center; gap:8px;
+  }
+  .btn-primary:hover { background:#0d2540; transform:translateY(-1px); box-shadow:0 6px 20px rgba(26,58,92,0.25); }
+  .btn-secondary {
+    background:white; color:#1a3a5c; padding:11px 24px; border-radius:8px;
+    font-family:'DM Sans',sans-serif; font-weight:500; font-size:14px;
+    border:1.5px solid #1a3a5c; cursor:pointer; transition:all 0.2s;
+    display:inline-flex; align-items:center; gap:8px;
+  }
+  .btn-secondary:hover { background:#eef3f9; }
+  .btn-accent {
+    background:#c8832a; color:white; padding:11px 24px; border-radius:8px;
+    font-family:'DM Sans',sans-serif; font-weight:500; font-size:14px; border:none;
+    cursor:pointer; transition:all 0.2s; display:inline-flex; align-items:center; gap:8px;
+  }
+  .btn-accent:hover { background:#a96c1e; }
+
+  /* OUTPUT STYLES */
+  .section-header { background:#1a3a5c; color:white; padding:10px 16px; font-weight:600; font-size:14px; letter-spacing:0.02em; }
+  .subsection-header { background:#e8f0f8; color:#1a3a5c; padding:8px 16px; font-weight:600; font-size:13px; border-left:4px solid #1a3a5c; }
+  #output { display:none; }
+  #output table { width:100%; border-collapse:collapse; font-size:13px; margin-bottom:12px; }
+  #output table td,#output table th { border:1px solid #b8b0a0; padding:8px 12px; vertical-align:top; line-height:1.6; word-break:break-word; }
+  #output table th { background:#1a3a5c; color:white; font-weight:600; text-align:left; }
+  #output table tr:nth-child(even) td { background:#fdfcf8; }
+
+  /* FOKUS PERILAKU BADGE IN OUTPUT */
+  .fokus-badge {
+    display:inline-block; padding:3px 10px; background:#fff3e0; border:1px solid #c8832a;
+    border-radius:12px; font-size:11px; color:#a96c1e; font-weight:600; margin:2px;
+  }
+
+  /* MISC */
+  .spinner { width:22px; height:22px; border:3px solid rgba(255,255,255,0.3); border-top:3px solid white; border-radius:50%; animation:spin 0.8s linear infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .loading-overlay { position:fixed; inset:0; background:rgba(26,58,92,0.75); z-index:999; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; }
+  .loading-card { background:white; border-radius:16px; padding:40px 48px; text-align:center; max-width:360px; }
+  .progress-bar { height:6px; background:#e5e7eb; border-radius:3px; overflow:hidden; width:100%; margin-top:16px; }
+  .progress-fill { height:100%; background:#1a3a5c; border-radius:3px; transition:width 0.4s ease; }
+  .error-msg { font-size:12px; color:#dc2626; margin-top:4px; display:none; }
+  .field-error .error-msg { display:block; }
+  .field-error .input-field { border-color:#dc2626; }
+  .step-badge { width:28px; height:28px; border-radius:50%; background:#1a3a5c; color:white; font-size:13px; font-weight:600; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .divider { border:none; border-top:1px solid #e5e0d8; margin:8px 0; }
+  @media print { .no-print { display:none !important; } body { background:white; } }
+  
+  /* CSS TAMBAHAN KHUSUS TANDA TANGAN BERSIH TANPA KOTAK */
+  .ttd-tabel-bersih { width: 100%; margin-top: 30px; border-collapse: collapse; border: none !important; }
+  .ttd-tabel-bersih td { border: none !important; background: transparent !important; padding: 10px; vertical-align: top; }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero no-print">
+  <div class="max-w-5xl mx-auto px-6 py-12">
+    <div class="flex items-center gap-3 mb-4">
+      <div style="width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;">
+        <img src="img/logo.png" style="width:48px;height:48px;object-fit:contain;border-radius:12px;" alt="Logo SDN">      
+      </div>
+      <div>
+        <h1 style="color:white;font-size:26px;line-height:1.2;">SDN Bugoharjo</h1>
+        <p style="color:#8db4d4;font-size:13px;margin-top:2px;">Generator RPM (Rencana Pembelajaran Mendalam) — Kurikulum Merdeka</p>
+      </div>
+    </div>
+    <p style="color:#c2d8ec;font-size:14px;max-width:750px;line-height:1.7;">Hasilkan dokumen RPM lengkap, terstruktur, dan siap cetak secara otomatis untuk semua jenjang dan mata pelajaran.</p>
+    
+    <!-- PROFIL & MODE SWITCH -->
+    <div style="margin-top:20px;display:flex;flex-wrap:wrap;align-items:center;gap:16px;">
+      <div style="display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:10px 18px;">
+        <img src="img/profil.jpeg" style="width:34px;height:34px;border-radius:50%;object-fit:cover;flex-shrink:0;" alt="Foto Profil">      
+        <div>
+          <div style="font-size:11px;color:#8db4d4;letter-spacing:0.06em;text-transform:uppercase;">Dikembangkan oleh</div>
+          <div style="font-size:14px;font-weight:600;color:white;margin-top:1px;">Valentiena Prastika Putrie</div>
+          <div style="font-size:11px;color:#a0c0d8;">Admin IT SDN BUGOHARJO</div>
+        </div>
+      </div>
+
+      <div style="display:inline-flex;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.18);border-radius:12px;padding:4px;gap:4px;">
+        <button id="btnIntra" onclick="setMode('intra')" style="padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;border:none;cursor:pointer;background:#c8832a;color:white;transition:all 0.3s ease;">
+          📘 Intrakurikuler
+        </button>
+        <button id="btnKokur" onclick="setMode('kokur')" style="padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;border:none;cursor:pointer;background:transparent;color:#8db4d4;transition:all 0.3s ease;">
+          🎨 Kokurikuler
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div class="loading-overlay" id="loadingOverlay" style="display:none;">
+  <div class="loading-card">
+    <div style="width:56px;height:56px;border:4px solid #eef3f9;border-top:4px solid #1a3a5c;border-radius:50%;animation:spin 0.9s linear infinite;margin:0 auto 20px;"></div>
+    <h3 style="font-size:18px;color:#1a3a5c;margin-bottom:8px;" id="loadingTitle">Menyusun RPM...</h3>
+    <p id="loadingMsg" style="font-size:13px;color:#6b7280;line-height:1.6;">Sedang menganalisis capaian pembelajaran...</p>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:5%;"></div></div>
+    <p id="progressPct" style="font-size:12px;color:#9ca3af;margin-top:8px;">5%</p>
+  </div>
+</div>
+
+<!-- FORM -->
+<div class="max-w-5xl mx-auto px-4 py-8 no-print" id="formSection">
+  <div id="modeIndicatorBadge" style="margin-bottom:24px;padding:14px 20px;background:#eef3f9;border:1.5px solid #1a3a5c;border-radius:12px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 10px rgba(0,0,0,0.03);transition:all 0.3s ease;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span id="modeIcon" style="font-size:22px;">📘</span>
+      <div>
+        <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;">Status Mode Aktif</div>
+        <div id="modeTextName" style="font-size:14px;font-weight:700;color:#1a3a5c;">Intrakurikuler (Mata Pelajaran Reguler)</div>
+      </div>
+    </div>
+    <div style="font-size:12px;color:#c8832a;font-weight:600;background:#fff3e0;padding:5px 14px;border-radius:20px;border:1px solid #f0d5b0;">Kurikulum Merdeka</div>
+  </div>
+
+  <div class="form-card p-8" id="mainFormCard">
+    <!-- A: IDENTITAS -->
+    <div class="flex items-center gap-3 mb-6">
+      <div class="step-badge">A</div>
+      <h2 style="font-size:18px;color:#1a3a5c;">Identitas Dokumen</h2>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
+      <div class="field-wrap" id="fw_penyusun"><label class="label required">Nama Guru (Penyusun)</label><input class="input-field" id="penyusun" type="text" placeholder="Contoh: Valentiena Prastika Putrie, S.Kom."><div class="error-msg">Nama penyusun wajib diisi.</div></div>
+      <div class="field-wrap" id="fw_sekolah"><label class="label required">Nama Sekolah</label><input class="input-field" id="sekolah" type="text" placeholder="Contoh: SDN BUGOHARJO"><div class="error-msg">Nama sekolah wajib diisi.</div></div>
+      <div class="field-wrap" id="fw_nipGuru"><label class="label">NIP Guru</label><input class="input-field" id="nipGuru" type="text" placeholder="Contoh: 1234567890"></div>
+      <div class="field-wrap" id="fw_kepsek"><label class="label">Nama Kepala Sekolah</label><input class="input-field" id="kepsek" type="text" placeholder="Contoh: Ana Mumtahana, M.Pd."></div>
+      
+      <div class="field-wrap" id="fw_jenisKokurikuler" style="display:none;grid-column: span 2;">
+        <label class="label required">Jenis Pilihan Kokurikuler</label>
+        <select class="input-field" id="jenisKokurikuler" onchange="handleJenisKokurikulerChange()">
+          <option value="Pembelajaran Berbasis Proyek">Pembelajaran Berbasis Proyek (P5)</option>
+          <option value="Gerakan 7 Kebiasaan Anak Indonesia Hebat">Gerakan 7 Kebiasaan Anak Indonesia Hebat</option>
+          <option value="Bentuk lain (konteks lokal)">Bentuk lain (konteks lokal)</option>
+        </select>
+      </div>
+
+      <div class="field-wrap" id="fw_mapel"><label class="label required">Mata Pelajaran</label><input class="input-field" id="mapel" type="text" placeholder="Contoh: Matematika, IPAS, Bahasa Indonesia..."><div class="error-msg">Mata pelajaran wajib diisi.</div></div>
+      <div class="field-wrap" id="fw_nipKepsek"><label class="label">NIP Kepala Sekolah</label><input class="input-field" id="nipKepsek" type="text" placeholder="Contoh: 1234567890"></div>
+      <div class="field-wrap" id="fw_kelas"><label class="label required">Kelas</label><input class="input-field" id="kelas" type="text" placeholder="Contoh: III / 3"><div class="error-msg">Kelas wajib diisi.</div></div>
+      <div class="field-wrap" id="fw_fase"><label class="label required">Fase</label>
+        <select class="input-field" id="fase">
+          <option value="">-- Pilih Fase --</option>
+          <option>Fase Pondasi (PAUD/TK)</option><option>Fase A (Kelas 1-2 SD)</option><option>Fase B (Kelas 3-4 SD)</option><option>Fase C (Kelas 5-6 SD)</option>
+        </select><div class="error-msg">Fase wajib dipilih.</div></div>
+      <div class="field-wrap" id="fw_semester"><label class="label required">Semester</label>
+        <select class="input-field" id="semester"><option value="">-- Pilih Semester --</option><option>Semester 1 (Ganjil)</option><option>Semester 2 (Genap)</option></select>
+        <div class="error-msg">Semester wajib dipilih.</div></div>
+      <div class="field-wrap" id="fw_tahunAjaran"><label class="label required">Tahun Pelajaran</label><input class="input-field" id="tahunAjaran" type="text" placeholder="Contoh: 2025/2026"><div class="error-msg">Tahun pelajaran wajib diisi.</div></div>
+      <div class="field-wrap" id="fw_alokasi"><label class="label required">Alokasi Waktu</label><input class="input-field" id="alokasi" type="text" placeholder="Contoh: 2 × 35 menit (2 JP) / 3 Pertemuan"><div class="error-msg">Alokasi waktu wajib diisi.</div></div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- B: DESAIN PEMBELAJARAN -->
+    <div class="flex items-center gap-3 my-6">
+      <div class="step-badge">B</div>
+      <h2 style="font-size:18px;color:#1a3a5c;">Desain Pembelajaran</h2>
+    </div>
+    <div class="grid grid-cols-1 gap-5 mb-6">
+      <div class="field-wrap" id="fw_cp"><label class="label required">Capaian Pembelajaran (CP)</label><textarea class="input-field" id="cp" rows="4" placeholder="Tuliskan CP dari dokumen kurikulum..."></textarea><div class="error-msg">Capaian pembelajaran wajib diisi.</div></div>
+      <div class="field-wrap" id="fw_tp"><label class="label required">Tujuan Pembelajaran (TP)</label><textarea class="input-field" id="tp" rows="3" placeholder="Contoh: Peserta didik dapat menjelaskan konsep pecahan..."></textarea><div class="error-msg">Tujuan pembelajaran wajib diisi.</div></div>
+    </div>
+
+    <!-- TOPIK & MATERI -->
+    <div style="background:linear-gradient(135deg,#eef6ff,#fdfcfa);border:2px solid #b8d4ef;border-radius:14px;padding:22px 24px;margin-bottom:24px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+        <div style="width:32px;height:32px;background:#1a3a5c;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="16" height="16" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>
+        </div>
+        <div>
+          <div style="font-size:14px;font-weight:600;color:#1a3a5c;" id="topikCardTitle">Topik &amp; Materi Pembelajaran</div>
+          <div style="font-size:11px;color:#6b7280;margin-top:1px;" id="topikCardDesc">Isi topik spesifik agar langkah pembelajaran lebih tajam dan kontekstual</div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:14px;display:none;" id="fw_dropdownTemaP5">
+        <label class="label required">Tema P5</label>
+        <select class="input-field" id="dropdownTemaP5" onchange="syncTemaP5ToUtama()">
+          <option value="Gaya Hidup Berkelanjutan">Gaya Hidup Berkelanjutan</option>
+          <option value="Kearifan Lokal">Kearifan Lokal</option>
+          <option value="Bhinneka Tunggal Ika">Bhinneka Tunggal Ika</option>
+          <option value="Bangunlah Jiwa dan Raganya">Bangunlah Jiwa dan Raganya</option>
+          <option value="Rekayasa dan Teknologi">Rekayasa dan Teknologi</option>
+          <option value="Kewirausahaan">Kewirausahaan</option>
+          <option value="Lainnya (isi manual)">Lainnya (isi manual)</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom:14px;display:none;" id="fw_dropdown7Kebiasaan">
+        <label class="label required">Pilihan Kebiasaan Utama</label>
+        <select class="input-field" id="dropdown7Kebiasaan" onchange="sync7KebiasaanToUtama()">
+          <option value="Bangun Pagi">1. Bangun Pagi Tepat Waktu</option>
+          <option value="Beribadah">2. Taat Beribadah</option>
+          <option value="Berolahraga">3. Rajin Berolahraga & Aktivitas Fisik</option>
+          <option value="Makan Sehat & Bergizi">4. Gemar Makan Sehat & Bergizi</option>
+          <option value="Gemar Membaca">5. Gemar Membaca & Belajar</option>
+          <option value="Memelihara Lingkungan">6. Memelihara Kebersihan & Lingkungan</option>
+          <option value="Istirahat Tepat Waktu">7. Istirahat & Tidur Tepat Waktu</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom:14px;">
+        <label class="label required" id="labelTopikUtama">Topik / Judul Materi Utama</label>
+        <input class="input-field" id="topikUtama" type="text" placeholder="Contoh: Pecahan Senilai, Sistem Pernapasan Manusia, Teks Persuasi...">
+        <div id="topikErr" class="error-msg">Topik utama wajib diisi.</div>
+      </div>
+      <div style="margin-bottom:14px;">
+        <label class="label" id="labelSubTopik">Sub-Topik / Poin Materi yang Dipelajari</label>
+        <div style="font-size:11px;color:#6b7280;margin-bottom:8px;">Ketik poin materi lalu tekan Enter atau klik Tambah</div>
+        <div id="subTopikTags" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;min-height:8px;"></div>
+        <div class="custom-input-wrap">
+          <input type="text" id="subTopikInput" placeholder="Contoh: Pengertian pecahan, Jenis-jenis pecahan, Operasi penjumlahan...">
+          <button class="btn-add-custom" onclick="addSubTopik()">+ Tambah</button>
+        </div>
+      </div>
+      <div>
+        <label class="label" id="labelProdukBelajar">Produk / Hasil Belajar yang Diharapkan</label>
+        <input class="input-field" id="produkBelajar" type="text" placeholder="Contoh: Mind map, Poster, Laporan, Proyek mini, Presentasi kelompok...">
+      </div>
+      <div id="topikPreview" style="display:none;margin-top:14px;padding:10px 14px;background:white;border:1px solid #b8d4ef;border-radius:8px;font-size:12px;color:#374151;line-height:1.8;"></div>
+    </div>
+
+    <!-- MODEL & METODE -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+      <div>
+        <label class="label required">Model Pembelajaran</label>
+        <div class="multi-select" id="modelPembelajaran">
+          <label><input type="checkbox" value="Project Based Learning (PjBL)"><span>Project-Based Learning (PjBL)</span></label>
+          <label><input type="checkbox" value="Problem Based Learning (PBL)"><span>Problem-Based Learning (PBL)</span></label>
+          <label><input type="checkbox" value="Inquiry Learning"><span>Inquiry</span></label>
+          <label><input type="checkbox" value="Pembelajaran Kooperatif"><span>Kooperatif</span></label>
+          <label><input type="checkbox" value="Contextual Teaching & Learning (CTL)"><span>Contextual Teaching & Learning (CTL)</span></label>
+          <label><input type="checkbox" value="Game-Based Learning (GBL)"><span>Game-Based Learning (GBL)</span></label>
+          <label><input type="checkbox" value="Blended Learning"><span>Blended</span></label>
+          <label><input type="checkbox" value="Discovery Learning"><span>Discovery</span></label>
+          <label><input type="checkbox" value="Flipped Learning"><span>Flipped</span></label>
+          <label><input type="checkbox" value="Model 5E (Engage, Explore, Explain, Elaborate, Evaluate)"><span>5E (Engage, Explore, Explain, Elaborate, Evaluate)</span></label>
+        </div>
+        <div id="modelCustomTags" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;"></div>
+        <div class="custom-input-wrap" style="margin-top:8px;">
+          <input type="text" id="modelCustomInput" placeholder="Model lainnya...">
+          <button class="btn-add-custom" onclick="addCustom('model')">+ Tambah</button>
+        </div>
+        <div class="error-msg" id="modelErr" style="display:none;">Pilih atau tambahkan minimal 1 model.</div>
+      </div>
+      <div>
+        <label class="label required">Metode Pembelajaran</label>
+        <div class="multi-select" id="metodePembelajaran">
+          <label><input type="checkbox" value="Ceramah Interaktif"><span>Ceramah Interaktif</span></label>
+          <label><input type="checkbox" value="Diskusi Kelompok"><span>Diskusi</span></label>
+          <label><input type="checkbox" value="Tanya Jawab"><span>Tanya Jawab</span></label>
+          <label><input type="checkbox" value="Eksperimen"><span>Eksperimen</span></label>
+          <label><input type="checkbox" value="Demonstrasi"><span>Demonstrasi</span></label>
+          <label><input type="checkbox" value="Discovery"><span>Discovery</span></label>
+          <label><input type="checkbox" value="Studi Kasus"><span>Studi Kasus</span></label>
+          <label><input type="checkbox" value="Role Play"><span>Role Play</span></label>
+          <label><input type="checkbox" value="Mind Mapping"><span>Mind Mapping</span></label>
+          <label><input type="checkbox" value="Presentasi"><span>Presentasi</span></label>
+        </div>
+        <div id="metodeCustomTags" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;"></div>
+        <div class="custom-input-wrap" style="margin-top:8px;">
+          <input type="text" id="metodeCustomInput" placeholder="Metode lainnya...">
+          <button class="btn-add-custom" onclick="addCustom('metode')">+ Tambah</button>
+        </div>
+        <div class="error-msg" id="metodeErr" style="display:none;">Pilih atau tambahkan minimal 1 metode.</div>
+      </div>
+    </div>
+
+    <!-- DIMENSI & SARANA -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+      <div>
+        <label class="label required">Dimensi Profil Lulusan</label>
+        <div class="multi-select" id="dimensiProfil">
+          <label><input type="checkbox" value="Keimanan dan Ketakwaan kepada Tuhan Yang Maha Esa"><span>Keimanan & Ketakwaan</span></label>
+          <label><input type="checkbox" value="Kewargaan"><span>Kewargaan</span></label>
+          <label><input type="checkbox" value="Penalaran Kritis"><span>Penalaran Kritis</span></label>
+          <label><input type="checkbox" value="Kreativitas"><span>Kreativitas</span></label>
+          <label><input type="checkbox" value="Kolaborasi"><span>Kolaborasi</span></label>
+          <label><input type="checkbox" value="Kemandirian"><span>Kemandirian</span></label>
+          <label><input type="checkbox" value="Kesehatan"><span>Kesehatan</span></label>
+          <label><input type="checkbox" value="Komunikasi"><span>Komunikasi</span></label>
+        </div>
+        <div id="dimensiCustomTags" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;"></div>
+        <div class="custom-input-wrap" style="margin-top:8px;">
+          <input type="text" id="dimensiCustomInput" placeholder="Dimensi lainnya...">
+          <button class="btn-add-custom" onclick="addCustom('dimensi')">+ Tambah</button>
+        </div>
+        <div class="error-msg" id="dimensiErr" style="display:none;">Pilih atau tambahkan minimal 1 dimensi.</div>
+      </div>
+      <div>
+        <label class="label required">Sarana dan Prasarana</label>
+        <div class="multi-select" id="sarana">
+          <label><input type="checkbox" value="LCD Proyektor"><span>LCD</span></label>
+          <label><input type="checkbox" value="Laptop"><span>Laptop</span></label>
+          <label><input type="checkbox" value="Chromebook"><span>Chromebook</span></label>
+          <label><input type="checkbox" value="Gawai / Smartphone"><span>Gawai (Smartphone)</span></label>
+          <label><input type="checkbox" value="YouTube"><span>YouTube</span></label>
+          <label><input type="checkbox" value="LKPD (Lembar Kerja Peserta Didik)"><span>LKPD</span></label>
+          <label><input type="checkbox" value="Whiteboard & Spidol"><span>Whiteboard</span></label>
+          <label><input type="checkbox" value="Buku Teks / Bahan Ajar"><span>Buku Teks</span></label>
+          <label><input type="checkbox" value="Canva"><span>Canva</span></label>
+          <label><input type="checkbox" value="Google Workspace (Docs, Slide, Form)"><span>Google Workspace</span></label>
+          <label><input type="checkbox" value="Quizizz / Kahoot"><span>Quizizz/Kahoot</span></label>
+          <label><input type="checkbox" value="Alat Peraga Konkret"><span>Alat Peraga</span></label>
+          <label><input type="checkbox" value="Modul Digital"><span>Modul Digital</span></label>
+          <label><input type="checkbox" value="Laboratorium"><span>Laboratorium</span></label>
+        </div>
+        <div id="saranaCustomTags" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;"></div>
+        <div class="custom-input-wrap" style="margin-top:8px;">
+          <input type="text" id="saranaCustomInput" placeholder="Sarana lainnya...">
+          <button class="btn-add-custom" onclick="addCustom('sarana')">+ Tambah</button>
+        </div>
+        <div class="error-msg" id="saranaErr" style="display:none;">Pilih atau tambahkan minimal 1 sarana.</div>
+      </div>
+    </div>
+
+    <!-- TARGET PD -->
+    <div class="mb-6">
+      <label class="label required">Target Peserta Didik</label>
+      <div class="multi-select" id="targetPD">
+        <label><input type="checkbox" value="Peserta Didik Reguler / Umum"><span>Reguler</span></label>
+        <label><input type="checkbox" value="Peserta Didik dengan Kesulitan Belajar"><span>Kesulitan Belajar</span></label>
+        <label><input type="checkbox" value="Peserta Didik dengan Pencapaian Tinggi"><span>Pencapaian Tinggi</span></label>
+      </div>
+      <div id="targetCustomTags" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;"></div>
+      <div class="custom-input-wrap" style="margin-top:8px;">
+        <input type="text" id="targetCustomInput" placeholder="Target lainnya...">
+        <button class="btn-add-custom" onclick="addCustom('target')">+ Tambah</button>
+      </div>
+      <div class="error-msg" id="targetErr" style="display:none;">Pilih atau tambahkan minimal 1 target.</div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- C: INDIKATOR KINERJA GURU -->
+    <div class="flex items-center gap-3 my-6">
+      <div class="step-badge">C</div>
+      <div>
+        <h2 style="font-size:18px;color:#1a3a5c;">Indikator Kinerja Guru</h2>
+        <p style="font-size:12px;color:#6b7280;margin-top:2px;">Dari Pengelolaan Kinerja PMM — pilih indikator, lalu centang fokus perilaku yang sesuai</p>
+      </div>
+    </div>
+
+    <div id="indikatorContainer">
+      <div class="indikator-card" id="ikCard_1">
+        <div class="indikator-header" onclick="toggleIndikator(1)">
+          <input type="checkbox" id="ik_1" value="Kualitas Pembelajaran" onchange="toggleFokus(1)">
+          <div>
+            <div class="indikator-label">1. Kualitas Pembelajaran</div>
+            <div class="indikator-sub">Kemampuan guru menciptakan proses pembelajaran yang bermakna, menarik, dan efektif</div>
+          </div>
+        </div>
+        <div class="fokus-perilaku-wrap" id="fokus_1">
+          <div class="fokus-label">Pilih Fokus Perilaku:</div>
+          <div class="fokus-chips">
+            <label class="fokus-chip"><input type="checkbox" name="fokus_1" value="Memfasilitasi kegiatan belajar yang beragam sesuai kebutuhan peserta didik"><span>Fasilitasi belajar beragam</span></label>
+            <label class="fokus-chip"><input type="checkbox" name="fokus_1" value="Menggunakan berbagai sumber dan media belajar yang relevan dan kontekstual"><span>Media belajar relevan</span></label>
+            <label class="fokus-chip"><input type="checkbox" name="fokus_1" value="Mendorong keterlibatan aktif peserta didik dalam proses pembelajaran"><span>Keterlibatan aktif PD</span></label>
+            <label class="fokus-chip"><input type="checkbox" name="fokus_1" value="Menggunakan pertanyaan pemantik untuk mendorong berpikir kritis"><span>Pertanyaan pemantik HOTS</span></label>
+            <label class="fokus-chip"><input type="checkbox" name="fokus_1" value="Memberikan umpan balik yang konstruktif dan tepat waktu"><span>Umpan balik konstruktif</span></label>
+          </div>
+        </div>
+      </div>
+
+      <div class="indikator-card" id="ikCard_2">
+        <div class="indikator-header" onclick="toggleIndikator(2)">
+          <input type="checkbox" id="ik_2" value="Iklim Belajar yang Aman dan Nyaman" onchange="toggleFokus(2)">
+          <div>
+            <div class="indikator-label">2. Iklim Belajar yang Aman dan Nyaman</div>
+            <div class="indikator-sub">Kemampuan guru membangun lingkungan kelas yang positif, inklusif, dan mendukung</div>
+          </div>
+        </div>
+        <div class="fokus-perilaku-wrap" id="fokus_2">
+          <div class="fokus-label">Pilih Fokus Perilaku:</div>
+          <div class="fokus-chips">
+            <label class="fokus-chip"><input type="checkbox" name="fokus_2" value="Membangun kesepakatan kelas secara demokratis bersama peserta didik"><span>Kesepakatan kelas demokratis</span></label>
+            <label class="fokus-chip"><input type="checkbox" name="fokus_2" value="Menciptakan suasana belajar yang inklusif dan menghargai keberagaman"><span>Inklusif & menghargai keberagaman</span></label>
+            <label class="fokus-chip"><input type="checkbox" name="fokus_2" value="Memberikan dukungan emosional dan sosial kepada peserta didik"><span>Dukungan sosial-emosional</span></label>
+            <label class="fokus-chip"><input type="checkbox" name="fokus_2" value="Mengelola kelas secara efektif untuk meminimalisir gangguan belajar"><span>Pengelolaan kelas efektif</span></label>
+            <label class="fokus-chip"><input type="checkbox" name="fokus_2" value="Menerapkan prinsip restoratif dalam menangani konflik di kelas"><span>Pendekatan restoratif</span></label>
+          </div>
+        </div>
+      </div>
+
+      <div class="indikator-card" id="ikCard_3">
+        <div class="indikator-header" onclick="toggleIndikator(3)">
+          <input type="checkbox" id="ik_3" value="Kompetensi dan Karakter Peserta Didik" onchange="toggleFokus(3)">
+          <div>
+            <div class="indikator-label">3. Kompetensi dan Karakter Peserta Didik</div>
+            <div class="indikator-sub">Kemampuan guru mengembangkan kompetensi akademik dan karakter peserta didik secara terpadu</div>
+          </div>
+        </div>
+        <div class="fokus-perilaku-wrap" id="fokus_3">
+          <div class="fokus-label">Pilih Fokus Perilaku:</div>
+          <div class="fokus-chips">
+            <label class="fokus-chip"><input type="checkbox" name="fokus_3" value="Mengintegrasikan pengembangan karakter dalam setiap kegiatan pembelajaran"><span>Integrasi pengembangan karakter</span></label>
+            <label class="fokus-chip"><input type="checkbox" name="fokus_3" value="Memfasilitasi peserta didik mengembangkan kemampuan berpikir tingkat tinggi (HOTS)"><span>Fasilitasi HOTS</span></label>
+            <label class="fokus-chip"><input type="checkbox" name="fokus_3" value="Mendorong peserta didik untuk mandiri dan bertanggung jawab atas belajarnya"><span>Kemandirian & tanggung jawab</span></label>
+            <label class="fokus-chip"><input type="checkbox" name="fokus_3" value="Mengembangkan kemampuan kolaborasi dan komunikasi peserta didik"><span>Kolaborasi & komunikasi</span></label>
+            <label class="fokus-chip"><input type="checkbox" name="fokus_3" value="Menumbuhkan kreativitas dan inovasi melalui tugas yang menantang"><span>Kreativitas & inovasi</span></label>
+          </div>
+        </div>
+      </div>
+
+      <div class="indikator-card" id="ikCard_4">
+        <div class="indikator-header" onclick="toggleIndikator(4)">
+          <input type="checkbox" id="ik_4" value="Refleksi dan Peningkatan Kualitas Pembelajaran" onchange="toggleFokus(4)">
+          <div>
+            <div class="indikator-label">4. Refleksi dan Peningkatan Kualitas Pembelajaran</div>
+            <div class="indikator-sub">Kemampuan guru merefleksi dan terus meningkatkan praktik mengajarnya</div>
+          </div>
+        </div>
+        <div class="fokus-perilaku-wrap" id="fokus_4">
+          <div class="fokus-label">Pilih Fokus Perilaku:</div>
+          <div class="fokus-chips">
+            <label class="fokus-chip"><input type="checkbox" name="fokus_4" value="Melakukan refleksi terhadap praktik pembelajaran secara rutin dan sistematis"><span>Refleksi praktik rutin</span></label>
+            <label class="fokus-chip"><input type="checkbox" name="fokus_4" value="Menggunakan data hasil asesmen untuk memperbaiki rencana pembelajaran"><span>Data asesmen untuk perbaikan</span></label>
+            <label class="fokus-chip"><input type="checkbox" name="fokus_4" value="Berkolaborasi dengan rekan guru dalam komunitas belajar profesional"><span>Komunitas belajar profesional</span></label>
+            <label class="fokus-chip"><input type="checkbox" name="fokus_4" value="Mengikuti pelatihan dan pengembangan profesional secara berkelanjutan"><span>Pengembangan profesional</span></label>
+          </div>
+        </div>
+      </div>
+
+      <div class="indikator-card" id="ikCard_5">
+        <div class="indikator-header" onclick="toggleIndikator(5)">
+          <input type="checkbox" id="ik_5" value="Perencanaan Pembelajaran yang Efektif" onchange="toggleFokus(5)">
+          <div>
+            <div class="indikator-label">5. Perencanaan Pembelajaran yang Efektif</div>
+            <div class="indikator-sub">Kemampuan guru merancang pembelajaran yang terstruktur, kontekstual, dan berpusat pada peserta didik</div>
+          </div>
+        </div>
+        <div class="fokus-perilaku-wrap" id="fokus_5">
+          <div class="fokus-label">Pilih Fokus Perilaku:</div>
+          <div class="fokus-chips">
+            <label class="fokus-chip"><input type="checkbox" name="fokus_5" value="Menyusun rencana pembelajaran yang selaras dengan CP, TP, dan asesmen"><span>Keselarasan CP-TP-Asesmen</span></label>
+            <label class="fokus-chip"><input type="checkbox" name="fokus_5" value="Merancang diferensiasi pembelajaran untuk mengakomodasi kebutuhan beragam"><span>Diferensiasi pembelajaran</span></label>
+            <label class="fokus-chip"><input type="checkbox" name="fokus_5" value="Memilih model dan metode pembelajaran yang tepat dan bervariasi"><span>Pemilihan model & metode</span></label>
+            <label class="fokus-chip"><input type="checkbox" name="fokus_5" value="Menyiapkan instrumen asesmen yang autentik dan komprehensif"><span>Instrumen asesmen autentik</span></label>
+          </div>
+        </div>
+      </div>
+
+      <div class="indikator-card" id="ikCard_6">
+        <div class="indikator-header" onclick="toggleIndikator(6)">
+          <input type="checkbox" id="ik_6" value="Keterlibatan Orang Tua dan Masyarakat" onchange="toggleFokus(6)">
+          <div>
+            <div class="indikator-label">6. Keterlibatan Orang Tua dan Masyarakat</div>
+            <div class="indikator-sub">Kemampuan guru membangun kemitraan dengan orang tua dan komunitas untuk mendukung pembelajaran</div>
+          </div>
+        </div>
+        <div class="fokus-perilaku-wrap" id="fokus_6">
+          <div class="fokus-label">Pilih Fokus Perilaku:</div>
+          <div class="fokus-chips">
+            <label class="fokus-chip"><input type="checkbox" name="fokus_6" value="Mengkomunikasikan perkembangan belajar peserta didik kepada orang tua secara berkala"><span>Komunikasi perkembangan PD</span></label>
+            <label class="fokus-chip"><input type="checkbox" name="fokus_6" value="Melibatkan orang tua sebagai mitra aktif dalam mendukung pembelajaran di rumah"><span>Orang tua sebagai mitra</span></label>
+            <label class="fokus-chip"><input type="checkbox" name="fokus_6" value="Memanfaatkan sumber daya komunitas lokal sebagai konteks pembelajaran"><span>Sumber daya komunitas</span></label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUMMARY FOKUS -->
+    <div class="fokus-summary" id="focusSummary">
+      <strong>📌 Fokus Perilaku Terpilih:</strong>
+      <div id="focusSummaryList" style="margin-top:6px;"></div>
+    </div>
+
+    <!-- GENERATE -->
+    <div class="flex justify-center mt-8">
+      <button class="btn-primary" onclick="generateRPM()" id="generateBtn" style="padding:16px 48px;font-size:16px;">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        Hasilkan Dokumen Sekarang
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- OUTPUT -->
+<div id="output" class="max-w-5xl mx-auto px-4 py-8">
+  <div class="flex flex-wrap gap-3 mb-6 no-print">
+    <button class="btn-primary" onclick="copyAndOpenGoogleDocs()">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+      Salin & Buka Google Dokumen
+    </button>
+    <button class="btn-accent" onclick="downloadWord()">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Unduh sebagai Word (.doc)
+    </button>
+    <button class="btn-secondary" onclick="window.print()">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      Cetak / Print
+    </button>
+    <button class="btn-secondary" onclick="backToForm()">← Kembali ke Form</button>
+  </div>
+  <div id="rpmContent" style="background:white;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,0.08);padding:40px;"></div>
+</div>
+
+<!-- FOOTER -->
+<div class="no-print" style="text-align:center;padding:32px 16px 24px;border-top:1px solid #e5e0d8;margin-top:8px;">
+  <div style="display:inline-flex;flex-direction:column;align-items:center;gap:12px;background:white;border:1px solid #e5e0d8;border-radius:16px;padding:16px 24px;box-shadow:0 2px 12px rgba(0,0,0,0.05);max-width:380px;">
+    <div style="display:flex;align-items:center;gap:12px;width:100%;">
+      <img src="img/profil.jpeg" style="width:42px;height:42px;border-radius:50%;object-fit:cover;flex-shrink:0;" alt="Foto Profil">      
+      <div style="text-align:left;">
+        <div style="font-size:10px;color:#9ca3af;letter-spacing:0.08em;text-transform:uppercase;">Generator Modul Ajar — Kurikulum Merdeka</div>
+        <div style="font-size:14px;font-weight:600;color:#1a3a5c;margin-top:1px;">Valentiena Prastika Putrie</div>
+        <div style="font-size:11px;color:#c8832a;font-weight:500;">Admin IT SDN BUGOHARJO</div>
+      </div>
+    </div>
+    <a href="https://wa.me/62881036424743?text=Assalamualaikum%20Miss%20Valen,%20saya%20ingin%20bertanya%20seputar%20Generator%20RPM" 
+       target="_blank" 
+       style="display:inline-flex;align-items:center;justify-content:center;gap:8px;background:#25D366;color:white;width:100%;padding:9px 16px;border-radius:10px;font-size:13px;font-weight:600;text-decoration:none;transition:all 0.2s;">
+      <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/>
+      </svg>
+      Hubungi via WhatsApp
+    </a>
+  </div>
+</div>
+
+<script>
+// ==========================================
+// MODE TOGGLE LOGIC
+// ==========================================
+let currentMode = 'intra';
+
+function setMode(mode) {
+  currentMode = mode;
+  const btnIntra = document.getElementById('btnIntra');
+  const btnKokur = document.getElementById('btnKokur');
+  const mainFormCard = document.getElementById('mainFormCard');
+  
+  const modeIcon = document.getElementById('modeIcon');
+  const modeTextName = document.getElementById('modeTextName');
+  const modeIndicatorBadge = document.getElementById('modeIndicatorBadge');
+
+  const labelMapel = document.querySelector('#fw_mapel label');
+  const inputMapel = document.getElementById('mapel');
+  const labelCP = document.querySelector('#fw_cp label');
+  const inputCP = document.getElementById('cp');
+  const labelTP = document.querySelector('#fw_tp label');
+  const inputTP = document.getElementById('tp');
+
+  const fwJenisKokurikuler = document.getElementById('fw_jenisKokurikuler');
+  const fwTemaP5 = document.getElementById('fw_dropdownTemaP5');
+  const fw7Kebiasaan = document.getElementById('fw_dropdown7Kebiasaan');
+
+  const topikCardTitle = document.getElementById('topikCardTitle');
+  const topikCardDesc = document.getElementById('topikCardDesc');
+  const labelTopikUtama = document.getElementById('labelTopikUtama');
+  const topikUtama = document.getElementById('topikUtama');
+  const labelSubTopik = document.getElementById('labelSubTopik');
+  const labelProdukBelajar = document.getElementById('labelProdukBelajar');
+  const produkBelajar = document.getElementById('produkBelajar');
+
+  if (mainFormCard) {
+    mainFormCard.style.transform = 'scale(0.995)';
+    mainFormCard.style.opacity = '0.6';
+    setTimeout(() => {
+      mainFormCard.style.transform = 'scale(1)';
+      mainFormCard.style.opacity = '1';
+    }, 200);
+  }
+
+  if (mode === 'kokur') {
+    if(btnKokur) { btnKokur.style.background = '#c8832a'; btnKokur.style.color = 'white'; btnKokur.style.boxShadow = '0 4px 12px rgba(200,131,42,0.4)'; }
+    if(btnIntra) { btnIntra.style.background = 'transparent'; btnIntra.style.color = '#8db4d4'; btnIntra.style.boxShadow = 'none'; }
+
+    if(modeIcon) modeIcon.textContent = '🎨';
+    if(modeTextName) modeTextName.textContent = 'Kokurikuler — Pembiasaan & Projek Karakter Siswa';
+    if(modeIndicatorBadge) { modeIndicatorBadge.style.background = '#fff8f0'; modeIndicatorBadge.style.borderColor = '#c8832a'; }
+
+    if(fwJenisKokurikuler) fwJenisKokurikuler.style.display = 'block';
+
+    if(labelMapel) {
+      labelMapel.textContent = 'Mata Pelajaran Terkait (Opsional)';
+      labelMapel.classList.remove('required');
+    }
+    if(inputMapel) { inputMapel.placeholder = 'Contoh: IPAS, Bahasa Indonesia, Pendidikan Pancasila...'; if(inputMapel.value.includes('Gerakan') || inputMapel.value.includes('Projek')) inputMapel.value = ''; }
+
+    if(labelCP) labelCP.textContent = 'Capaian / Elemen Profil Pelajar Pancasila';
+    if(inputCP) inputCP.placeholder = 'Tuliskan elemen dan sub-elemen dari dokumen panduan...';
+
+    if(labelTP) labelTP.textContent = 'Tujuan Pembelajaran Kokurikuler';
+    if(inputTP) inputTP.placeholder = 'Masukkan tujuan pembelajaran (fokus pada penguatan dimensi profil)...';
+
+    handleJenisKokurikulerChange();
+
+  } else {
+    if(btnIntra) { btnIntra.style.background = '#c8832a'; btnIntra.style.color = 'white'; btnIntra.style.boxShadow = '0 4px 12px rgba(200,131,42,0.4)'; }
+    if(btnKokur) { btnKokur.style.background = 'transparent'; btnKokur.style.color = '#8db4d4'; btnKokur.style.boxShadow = 'none'; }
+
+    if(modeIcon) modeIcon.textContent = '📘';
+    if(modeTextName) modeTextName.textContent = 'Intrakurikuler (Mata Pelajaran Reguler)';
+    if(modeIndicatorBadge) { modeIndicatorBadge.style.background = '#eef3f9'; modeIndicatorBadge.style.borderColor = '#1a3a5c'; }
+
+    if(fwJenisKokurikuler) fwJenisKokurikuler.style.display = 'none';
+    if(fwTemaP5) fwTemaP5.style.display = 'none';
+    if(fw7Kebiasaan) fw7Kebiasaan.style.display = 'none';
+
+    if(labelMapel) {
+      labelMapel.textContent = 'Mata Pelajaran';
+      labelMapel.classList.add('required');
+    }
+    if(inputMapel) { inputMapel.placeholder = 'Contoh: Matematika, IPAS, Bahasa Indonesia...'; }
+
+    if(labelCP) labelCP.textContent = 'Capaian Pembelajaran (CP)';
+    if(inputCP) inputCP.placeholder = 'Tuliskan CP dari dokumen kurikulum...';
+
+    if(labelTP) labelTP.textContent = 'Tujuan Pembelajaran (TP)';
+    if(inputTP) inputTP.placeholder = 'Contoh: Peserta didik dapat menjelaskan konsep pecahan...';
+
+    if(topikCardTitle) topikCardTitle.textContent = 'Topik & Materi Pembelajaran';
+    if(topikCardDesc) topikCardDesc.textContent = 'Isi topik spesifik agar langkah pembelajaran lebih tajam dan kontekstual';
+    if(labelTopikUtama) labelTopikUtama.textContent = 'Topik / Judul Materi Utama';
+    if(topikUtama) {
+      topikUtama.value = ''; 
+      topikUtama.placeholder = 'Contoh: Pecahan Senilai, Sistem Pernapasan Manusia, Teks Persuasi...';
+    }
+    if(labelSubTopik) labelSubTopik.textContent = 'Sub-Topik / Poin Materi yang Dipelajari';
+    if(labelProdukBelajar) labelProdukBelajar.textContent = 'Produk / Hasil Belajar yang Diharapkan';
+    
+    if(produkBelajar) produkBelajar.value = '';
+    
+    subTopikList = [];
+    renderSubTopik();
+    updateTopikPreview();
+  }
+}
+
+function handleJenisKokurikulerChange() {
+  const jenis = document.getElementById('jenisKokurikuler').value;
+  const fwTemaP5 = document.getElementById('fw_dropdownTemaP5');
+  const fw7Kebiasaan = document.getElementById('fw_dropdown7Kebiasaan');
+
+  const topikCardTitle = document.getElementById('topikCardTitle');
+  const topikCardDesc = document.getElementById('topikCardDesc');
+  const labelTopikUtama = document.getElementById('labelTopikUtama');
+  const topikUtama = document.getElementById('topikUtama');
+  const labelSubTopik = document.getElementById('labelSubTopik');
+  const labelProdukBelajar = document.getElementById('labelProdukBelajar');
+
+  if (jenis === 'Pembelajaran Berbasis Proyek') {
+    fwTemaP5.style.display = 'block';
+    fw7Kebiasaan.style.display = 'none';
+
+    if(topikCardTitle) topikCardTitle.textContent = 'Topik & Aksi Nyata Projek P5';
+    if(topikCardDesc) topikCardDesc.textContent = 'Pilih tema dan isi rincian aktivitas projek siswa';
+    if(labelTopikUtama) labelTopikUtama.textContent = 'Judul / Topik Aksi Projek';
+    if(labelSubTopik) labelSubTopik.textContent = 'Tahapan / Rangkaian Aktivitas Projek';
+    if(labelProdukBelajar) labelProdukBelajar.textContent = 'Bentuk Produk / Aksi Nyata Akhir';
+    
+    syncTemaP5ToUtama();
+
+  } else if (jenis === 'Gerakan 7 Kebiasaan Anak Indonesia Hebat') {
+    fwTemaP5.style.display = 'none';
+    fw7Kebiasaan.style.display = 'block';
+
+    if(topikCardTitle) topikCardTitle.textContent = 'Gerakan 7 Kebiasaan Anak Indonesia Hebat';
+    if(topikCardDesc) topikCardDesc.textContent = 'Pilih kebiasaan utama dan tentukan bentuk pembiasaan harian siswa';
+    if(labelTopikUtama) labelTopikUtama.textContent = 'Nama Program / Fokus Pembiasaan';
+    if(labelSubTopik) labelSubTopik.textContent = 'Langkah / Aktivitas Pembiasaan Harian';
+    if(labelProdukBelajar) labelProdukBelajar.textContent = 'Bentuk Jurnal / Bukti Pembiasaan Siswa';
+
+    sync7KebiasaanToUtama();
+
+  } else {
+    fwTemaP5.style.display = 'none';
+    fw7Kebiasaan.style.display = 'none';
+
+    if(topikCardTitle) topikCardTitle.textContent = 'Program Kokurikuler Konteks Lokal';
+    if(topikCardDesc) topikCardDesc.textContent = 'Isi rincian program kokurikuler khas sekolah atau daerah';
+    if(labelTopikUtama) labelTopikUtama.textContent = 'Nama Program / Kegiatan Lokal';
+    if(topikUtama) { topikUtama.value = ''; topikUtama.placeholder = 'Contoh: Sabtu Bersih Lingkungan Sekolah, Kemah Karakter...'; }
+    if(labelSubTopik) labelSubTopik.textContent = 'Tahapan Kegiatan';
+    if(labelProdukBelajar) labelProdukBelajar.textContent = 'Hasil / Luaran Kegiatan';
+  }
+}
+
+function syncTemaP5ToUtama() {
+  const sel = document.getElementById('dropdownTemaP5').value;
+  const topikUtama = document.getElementById('topikUtama');
+  if (sel !== 'Lainnya (isi manual)') {
+    topikUtama.value = sel + ' — ';
+  } else {
+    topikUtama.value = '';
+    topikUtama.placeholder = 'Ketik judul projek manual...';
+  }
+  updateTopikPreview();
+}
+
+function sync7KebiasaanToUtama() {
+  const sel = document.getElementById('dropdown7Kebiasaan').value;
+  const topikUtama = document.getElementById('topikUtama');
+  topikUtama.value = 'Gerakan 7 Kebiasaan: ' + sel;
+  updateTopikPreview();
+}
+
+// CUSTOM ITEMS
+const customItems = { model:[], metode:[], dimensi:[], sarana:[], target:[] };
+
+function addCustom(type) {
+  const inputId = { model:'modelCustomInput', metode:'metodeCustomInput', dimensi:'dimensiCustomInput', sarana:'saranaCustomInput', target:'targetCustomInput' }[type];
+  const tagId   = { model:'modelCustomTags', metode:'metodeCustomTags', dimensi:'dimensiCustomTags', sarana:'saranaCustomTags', target:'targetCustomTags' }[type];
+  const val = document.getElementById(inputId).value.trim();
+  if (!val) return;
+  if (customItems[type].includes(val)) { document.getElementById(inputId).value=''; return; }
+  customItems[type].push(val);
+  document.getElementById(inputId).value = '';
+  renderCustomTags(type, tagId);
+}
+function removeCustom(type, val) {
+  customItems[type] = customItems[type].filter(v => v !== val);
+  const tagId = { model:'modelCustomTags', metode:'metodeCustomTags', dimensi:'dimensiCustomTags', sarana:'saranaCustomTags', target:'targetCustomTags' }[type];
+  renderCustomTags(type, tagId);
+}
+function renderCustomTags(type, tagId) {
+  const wrap = document.getElementById(tagId);
+  wrap.innerHTML = customItems[type].map(v =>
+    `<span class="custom-tag">${v}<button onclick="removeCustom('${type}','${v.replace(/'/g,"\\'")}')">×</button></span>`
+  ).join('');
+}
+['model','metode','dimensi','sarana','target'].forEach(t => {
+  const id = t+'CustomInput';
+  document.getElementById(id)?.addEventListener('keydown', e => { if(e.key==='Enter'){ e.preventDefault(); addCustom(t); } });
+});
+
+// INDIKATOR KINERJA LOGIC
+function toggleIndikator(n) {
+  const cb = document.getElementById('ik_'+n);
+  cb.checked = !cb.checked;
+  toggleFokus(n);
+}
+function toggleFokus(n) {
+  const cb = document.getElementById('ik_'+n);
+  const wrap = document.getElementById('fokus_'+n);
+  const card = document.getElementById('ikCard_'+n);
+  if (cb.checked) {
+    wrap.classList.add('show');
+    card.classList.add('selected');
+  } else {
+    wrap.classList.remove('show');
+    card.classList.remove('selected');
+    document.querySelectorAll(`input[name="fokus_${n}"]`).forEach(f => f.checked=false);
+  }
+  updateFocusSummary();
+}
+
+document.querySelectorAll('.fokus-chip input').forEach(cb => {
+  cb.addEventListener('change', updateFocusSummary);
+});
+
+function updateFocusSummary() {
+  const all = getAllFokus();
+  const summary = document.getElementById('focusSummary');
+  const list = document.getElementById('focusSummaryList');
+  if (all.length === 0) { summary.classList.remove('show'); return; }
+  summary.classList.add('show');
+  list.innerHTML = all.map(f => `<span class="custom-tag" style="margin:2px 4px 2px 0">✓ ${f.fokus}</span>`).join('');
+}
+
+function getAllIndikator() {
+  const result = [];
+  for (let n=1; n<=6; n++) {
+    const cb = document.getElementById('ik_'+n);
+    if (cb && cb.checked) {
+      const fokusChecked = [...document.querySelectorAll(`input[name="fokus_${n}"]:checked`)].map(f=>f.value);
+      result.push({ indikator: cb.value, fokus: fokusChecked });
+    }
+  }
+  return result;
+}
+function getAllFokus() {
+  const result = [];
+  for (let n=1; n<=6; n++) {
+    const cb = document.getElementById('ik_'+n);
+    if (cb && cb.checked) {
+      const fokusChecked = [...document.querySelectorAll(`input[name="fokus_${n}"]:checked`)].map(f=>({indikator:cb.value, fokus:f.value}));
+      result.push(...fokusChecked);
+    }
+  }
+  return result;
+}
+
+// VALIDATION
+function getChecked(id) {
+  return [...document.querySelectorAll(`#${id} input:checked`)].map(c => c.value);
+}
+function getAll(type) {
+  const checkId = {model:'modelPembelajaran',metode:'metodePembelajaran',dimensi:'dimensiProfil',sarana:'sarana',target:'targetPD'}[type];
+  return [...getChecked(checkId), ...customItems[type]];
+}
+function validateForm() {
+  let valid = true;
+  let requiredIds = ['penyusun','sekolah','fase','kelas','semester','tahunAjaran','alokasi','cp','tp'];
+  
+  if (currentMode === 'intra') {
+    requiredIds.push('mapel');
+  }
+
+  requiredIds.forEach(id => {
+    const el = document.getElementById(id);
+    const wrap = document.getElementById('fw_'+id) || el.parentElement;
+    if (!el.value.trim()) { wrap.classList.add('field-error'); valid=false; }
+    else wrap.classList.remove('field-error');
+  });
+
+  [['model','modelErr'],['metode','metodeErr'],['dimensi','dimensiErr'],['sarana','saranaErr'],['target','targetErr']].forEach(([type,errId]) => {
+    const errEl = document.getElementById(errId);
+    if (!getAll(type).length) { errEl.style.display='block'; valid=false; }
+    else errEl.style.display='none';
+  });
+  return valid;
+}
+
+// LOADING
+const loadingMessages = [
+  "Menganalisis data kurikulum...","Merancang identifikasi peserta didik...","Menyusun materi dan konsep pembelajaran...","Mengintegrasikan indikator kinerja guru...","Merancang langkah kegiatan pendahuluan...","Menyusun kegiatan inti berbasis fokus perilaku...","Menyiapkan instrumen asesmen...","Membuat lembar kerja dan rubrik...","Merapikan format dokumen...","Hampir selesai..."
+];
+let loadingInterval, progressVal=5, msgIdx=0;
+function startLoading() {
+  document.getElementById('loadingOverlay').style.display='flex';
+  document.getElementById('loadingTitle').textContent = currentMode === 'kokur' ? 'Menyusun Modul Kokurikuler...' : 'Menyusun RPM...';
+  progressVal=5; msgIdx=0;
+  loadingInterval = setInterval(() => {
+    progressVal = Math.min(95, progressVal + Math.random()*8+2);
+    msgIdx = Math.min(msgIdx+1, loadingMessages.length-1);
+    document.getElementById('progressFill').style.width=progressVal+'%';
+    document.getElementById('progressPct').textContent=Math.round(progressVal)+'%';
+    document.getElementById('loadingMsg').textContent=loadingMessages[msgIdx];
+  }, 900);
+}
+function stopLoading() {
+  clearInterval(loadingInterval);
+  document.getElementById('progressFill').style.width='100%';
+  document.getElementById('progressPct').textContent='100%';
+  document.getElementById('loadingMsg').textContent='Dokumen berhasil dibuat!';
+  setTimeout(() => { document.getElementById('loadingOverlay').style.display='none'; }, 600);
+}
+
+// DATA
+function getData() {
+  return {
+    penyusun: document.getElementById('penyusun').value.trim(),
+    sekolah:  document.getElementById('sekolah').value.trim(),
+    nipGuru:  document.getElementById('nipGuru').value.trim() || '-',
+    kepsek:   document.getElementById('kepsek').value.trim() || '___________________',
+    nipKepsek:document.getElementById('nipKepsek').value.trim() || '___________________',
+    mapel:    document.getElementById('mapel').value.trim() || 'Semua Mata Pelajaran',
+    fase:     document.getElementById('fase').value.trim(),
+    kelas:    document.getElementById('kelas').value.trim(),
+    semester: document.getElementById('semester').value.trim(),
+    tahunAjaran: document.getElementById('tahunAjaran').value.trim(),
+    alokasi:  document.getElementById('alokasi').value.trim(),
+    cp:       document.getElementById('cp').value.trim(),
+    tp:       document.getElementById('tp').value.trim(),
+    jenisKokurikuler: document.getElementById('jenisKokurikuler') ? document.getElementById('jenisKokurikuler').value : '',
+    model:    getAll('model'),
+    metode:   getAll('metode'),
+    dimensi:  getAll('dimensi'),
+    sarana:   getAll('sarana'),
+    target:   getAll('target'),
+    indikator: getAllIndikator(),
+    topikUtama: (document.getElementById('topikUtama')||{value:''}).value.trim(),
+    subTopik: subTopikList.slice(),
+    produkBelajar: (document.getElementById('produkBelajar')||{value:''}).value.trim(),
+  };
+}
+
+// GENERATORS
+function genDimensiDeskripsi(dimensi) {
+  const desk = {
+    "Keimanan dan Ketakwaan kepada Tuhan Yang Maha Esa":"Peserta didik menghayati dan mengamalkan nilai-nilai keimanan dalam setiap aktivitas belajar, menunjukkan sikap syukur, jujur, dan berintegritas.",
+    "Kewargaan":"Peserta didik menunjukkan kepedulian terhadap lingkungan sosial, menghargai keberagaman, dan berpartisipasi aktif sebagai warga negara yang bertanggung jawab.",
+    "Penalaran Kritis":"Peserta didik mampu menganalisis informasi secara mendalam, mengevaluasi berbagai sudut pandang, dan mengambil keputusan berbasis bukti dan logika.",
+    "Kreativitas":"Peserta didik menghasilkan gagasan orisinal, berani bereksperimen, dan mengembangkan solusi inovatif terhadap permasalahan nyata.",
+    "Kolaborasi":"Peserta didik mampu bekerja sama secara efektif dalam tim, menghargai perbedaan pendapat, dan berkontribusi positif dalam pencapaian tujuan bersama.",
+    "Kemandirian":"Peserta didik memiliki inisiatif, bertanggung jawab atas proses belajarnya, dan mampu mengelola diri sendiri dengan baik.",
+    "Kesehatan":"Peserta didik memahami dan menerapkan pola hidup sehat secara fisik dan mental, serta peduli terhadap kesejahteraan diri dan orang lain.",
+    "Komunikasi":"Peserta didik mampu menyampaikan ide dan gagasan secara jelas, tepat sasaran, dan efektif melalui berbagai media dan konteks.",
+  };
+  return dimensi.map(d=>`<tr><td style="font-weight:600;width:30%">${d}</td><td>${desk[d]||'Peserta didik mengembangkan kompetensi dimensi '+d+' melalui aktivitas yang bermakna dan kontekstual.'}</td></tr>`).join('');
+}
+
+function genIndikatorOutput(indikator) {
+  if (!indikator.length) return '<tr><td colspan="2" style="color:#9ca3af;font-style:italic;">Tidak ada indikator kinerja yang dipilih.</td></tr>';
+  return indikator.map(ik => `
+    <tr>
+      <td style="font-weight:600;width:30%;background:#eef3f9;vertical-align:top">
+        ${ik.indikator}
+      </td>
+      <td>
+        ${ik.fokus.length
+          ? '<strong>Fokus Perilaku:</strong><br>' + ik.fokus.map(f=>`<span class="fokus-badge">✓ ${f}</span>`).join(' ')
+          : '<em style="color:#9ca3af">Belum memilih fokus perilaku spesifik.</em>'
+        }
+      </td>
+    </tr>`).join('');
+}
+
+function genFokusPeakePendahuluan(indikator, mapel, tp, kelas) {
+  return `Guru memulai kegiatan dengan penuh semangat dan kehangatan. <strong>Pembukaan:</strong> Guru mengucapkan salam, menanyakan kabar, dan memastikan kesiapan fisik serta mental peserta didik. <strong>Doa:</strong> Berdoa bersama dipimpin oleh ketua kelas.
+<br><br><strong>Apersepsi & Motivasi:</strong> Mengaitkan kegiatan dengan pengalaman nyata peserta didik.
+<br><br><strong>Tujuan / Target Kegiatan:</strong> Guru menyampaikan fokus kegiatan: "${tp}".
+<br><br><strong>Pertanyaan Pemantik:</strong>
+<ol style="margin:8px 0 0 20px;line-height:1.6">
+<li>"Bagaimana isu atau tema ini berdampak langsung pada kehidupan kita sehari-hari?"</li>
+<li>"Langkah nyata apa yang bisa kita mulai dari lingkungan terdekat?"</li>
+</ol>`;
+}
+
+function genFokusInti(indikator, mapel, tp, model, metode, sarana, topik, subTopik, produk) {
+  const t = topik || mapel;
+  const subBullets = subTopik && subTopik.length ? '<ul style="margin:6px 0 10px 20px;line-height:1.6">'+subTopik.map((s,i)=>'<li><strong>'+(i+1)+'. '+s+'</strong></li>').join('')+'</ul>' : '';
+  const produkStr = produk || 'karya/bukti pembiasaan/produk nyata';
+  
+  const memahami = `<strong>Fase Eksplorasi / Pengenalan — Fokus: "${t}"</strong>
+${subBullets}<br>Peserta didik mengamati dan menggali informasi awal melalui media dan sumber belajar kontekstual.
+<ul style="margin:8px 0 0 20px;line-height:1.6">
+<li>Eksplorasi konsep dan penumbuhan kepekaan terhadap isu terkait ${t}.</li>
+<li>Diskusi kelompok untuk merumuskan pemahaman awal dan identifikasi masalah.</li>
+</ul>`;
+
+  const mengaplikasi = `<strong>Fase Aksi & Penerapan Nyata — Model: ${model.join(', ') || 'Pembelajaran Aktif'}</strong>
+<br>Peserta didik mengaplikasikan pemahaman tentang <strong>${t}</strong> melalui kegiatan kolaboratif:
+<ul style="margin:8px 0 0 20px;line-height:1.6">
+<li><strong>Perencanaan & Perancangan:</strong> Menyusun langkah kerja pembuatan <em>${produkStr}</em>.</li>
+<li><strong>Eksekusi Proyek / Pembiasaan:</strong> Mengimplementasikan rancangan secara aktif dan konsisten.</li>
+<li><strong>Presentasi / Ruang Berbagi:</strong> Menampilkan hasil karya atau berbagi pengalaman di depan kelas.</li>
+</ul>`;
+
+  const merefleksi = `<strong>Fase Refleksi & Tindak Lanjut:</strong>
+<ul style="margin:8px 0 0 20px;line-height:1.6">
+<li>Refleksi mandiri dan kelompok mengenai proses yang telah dilalui.</li>
+<li>Penguatan nilai-nilai karakter dan rencana keberlanjutan aksi.</li>
+</ul>`;
+
+  return { memahami, mengaplikasi, merefleksi };
+}
+
+function genMateriTipe(mapel, topik, subTopik) {
+  var t = topik || mapel;
+  var sub = subTopik && subTopik.length ? ' mencakup: ' + subTopik.join(', ') : '';
+  return {
+    faktual: `Data, fakta, dan fenomena nyata terkait <strong>${t}</strong>${sub}.`,
+    konseptual: `Prinsip dasar dan pemahaman mendalam mengenai nilai-nilai yang terkandung dalam <strong>${t}</strong>.`,
+    prosedural: `Tahapan dan langkah-langkah praktis dalam melaksanakan rangkaian kegiatan atau pembuatan produk <strong>${t}</strong>.`,
+    metakognitif: `Kesadaran reflektif peserta didik terhadap proses berpikir dan pengembangan karakter selama kegiatan.`,
+  };
+}
+function genPesertaDidik(target, mapel, kelas) {
+  return `<tr><td style="width:25%;font-weight:600;background:#f8f6f2">Karakteristik & Kebutuhan</td><td>Peserta didik kelas ${kelas} mengikuti kegiatan ini dengan pendekatan berdiferensiasi, mengakomodasi gaya belajar visual, auditori, dan kinestetik untuk memastikan keterlibatan aktif seluruh siswa.</td></tr>`;
+}
+function genLintasDisiplin(mapel) {
+  return 'Bahasa Indonesia, Seni Budaya, Pendidikan Pancasila, Ilmu Pengetahuan Alam dan Sosial';
+}
+function genLingkungan(sarana) {
+  return `Lingkungan sekolah, ruang kelas kolaboratif, serta pemanfaatan sarana pendukung digital dan alat peraga nyata.`;
+}
+function genKemitraan(mapel) {
+  return `Kolaborasi antara guru, orang tua peserta didik di rumah, serta pemanfaatan sumber belajar dari lingkungan masyarakat sekitar.`;
+}
+function genPetaPengalaman(mapel, model, topik) {
+  const t = topik || mapel;
+  return {
+    mengalami:`Peserta didik mengalami langsung situasi atau konteks nyata yang berkaitan dengan <strong>${t}</strong>.`,
+    bertanya:`Peserta didik didorong mengajukan pertanyaan kritis guna menggali akar permasalahan atau esensi topik.`,
+    mengeksplorasi:`Peserta didik mencari informasi, referensi, dan alternatif solusi secara kolaboratif.`,
+    merefleksi:`Peserta didik mengevaluasi sejauh mana pengalaman belajar memberikan makna bagi diri dan lingkungan.`,
+    mengaplikasikan:`Peserta didik mewujudkan gagasan dalam bentuk aksi nyata atau produk bermanfaat.`,
+  };
+}
+function genPenutup(mapel, tp) {
+  return `<strong>Refleksi & Kesimpulan:</strong> Guru bersama peserta didik menyimpulkan esensi kegiatan hari ini.
+<br><br><strong>Tindak Lanjut:</strong> Menyampaikan persiapan untuk tahapan kegiatan berikutnya.
+<br><br><strong>Doa Penutup & Salam.</strong>`;
+}
+function genAsesmenAwal(mapel) {
+  return [
+    `Apa yang sudah kamu ketahui mengenai isu atau topik ini di lingkungan sekitarmu?`,
+    `Bagaimana perasaan dan pandangan awalmu terhadap pentingnya topik ini?`,
+  ];
+}
+function genRubrikFormatif() {
+  return `<table style="width:100%;border-collapse:collapse;font-size:11pt"><tr><th style="width:25%">Aspek Pengamatan</th><th style="width:25%">Sangat Berkembang (SB)</th><th style="width:25%">Sesuai Harapan (SH)</th><th style="width:25%">Mulai Berkembang (MB)</th></tr><tr><td><strong>Keterlibatan & Kolaborasi</strong></td><td>Aktif memimpin dan bekerja sama dalam tim</td><td>Terlibat aktif dalam kelompok</td><td>Membutuhkan dorongan untuk aktif</td></tr><tr><td><strong>Kreativitas & Karakter</strong></td><td>Menunjukkan konsistensi dan inovasi yang sangat baik</td><td>Sesuai target pembiasaan/karya</td><td>Masih membutuhkan arahan</td></tr></table>`;
+}
+function genRubrikSumatif() {
+  return `<table style="width:100%;border-collapse:collapse;font-size:11pt"><tr><th style="width:30%">Komponen Penilaian</th><th style="width:15%">Bobot</th><th>Keterangan</th></tr><tr><td>Proses & Keaktifan</td><td>40%</td><td>Konsistensi dan kolaborasi selama kegiatan</td></tr><tr><td>Produk / Aksi Nyata</td><td>60%</td><td>Kualitas, relevansi, dan manfaat hasil akhir</td></tr></table>`;
+}
+function genRemedialPengayaan(mapel) {
+  return {
+    remedial:`Pendampingan khusus dan bimbingan personal bagi peserta didik yang memerlukan penguatan pemahaman atau motivasi.`,
+    pengayaan:`Memberikan kesempatan kepada peserta didik untuk memperluas aksi nyata atau membagikan inspirasi ke kelas lain.`,
+  };
+}
+function genDiferensiasi(mapel, target) {
+  return {
+    konten: `Penyediaan sumber belajar yang beragam sesuai tingkat kesiapan peserta didik.`,
+    proses: `Fleksibilitas peran dan pendampingan bertingkat (scaffolding) selama kegiatan berlangsung.`,
+    produk: `Kebebasan bentuk unjuk kerja atau produk akhir sesuai minat dan potensi peserta didik.`,
+  };
+}
+function genHOTS(mapel) {
+  return [
+    `Bagaimana cara kita mengajak orang lain untuk peduli terhadap kebiasaan/isu positif ini?`,
+    `Solusi kreatif apa yang paling efektif untuk diterapkan di lingkungan sekolah kita?`,
+  ];
+}
+function genPustaka(mapel) {
+  const th=new Date().getFullYear();
+  return [`Kemdikbudristek. (${th}). <em>Panduan Pengembangan Kurikulum Merdeka</em>. Jakarta: BSKAP.`,`Kemdikbudristek. (${th}). <em>Panduan Pembelajaran dan Asesmen</em>. Jakarta: Pusat Kurikulum.`];
+}
+
+// GENERATE DOCUMENT
+function generateRPM() {
+  if (!validateForm()) {
+    document.querySelector('.field-error, [style*="block"]')?.scrollIntoView({behavior:'smooth',block:'center'});
+    return;
+  }
+  startLoading();
+  setTimeout(() => {
+    try {
+      const d = getData();
+      const materi = genMateriTipe(d.mapel, d.topikUtama, d.subTopik);
+      const peta = genPetaPengalaman(d.mapel, d.model, d.topikUtama);
+      const inti = genFokusInti(d.indikator, d.mapel, d.tp, d.model, d.metode, d.sarana, d.topikUtama, d.subTopik, d.produkBelajar);
+      const diferensiasi = genDiferensiasi(d.mapel, d.target);
+      const remedial = genRemedialPengayaan(d.mapel);
+      const hots = genHOTS(d.mapel);
+      const tanggal = new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+      const semuaFokus = d.indikator.flatMap(ik=>ik.fokus);
+
+      let judulUtama = 'RENCANA PEMBELAJARAN MENDALAM';
+      let subJudul = 'Kurikulum Merdeka — Pembelajaran Berdiferensiasi';
+
+      if (currentMode === 'kokur') {
+        judulUtama = 'MODUL KOKURIKULER — ' + d.jenisKokurikuler.toUpperCase();
+        subJudul = 'Penguatan Profil Pelajar Pancasila & Karakter Siswa — Kurikulum Merdeka';
+      }
+
+      const html = `
+<div style="font-family:'Times New Roman',serif;font-size:12pt;color:#111;line-height:1.5;">
+
+<div style="text-align:center;border-bottom:3px solid #1a3a5c;padding-bottom:12px;margin-bottom:18px;">
+  <div style="font-size:16pt;font-weight:700;color:#1a3a5c;font-family:'Playfair Display',serif;">${judulUtama}</div>
+  <div style="font-size:11pt;color:#444;margin-top:3px;">${subJudul}</div>
+  <div style="font-size:10pt;color:#666;margin-top:2px;">${d.sekolah}</div>
+</div>
+
+<!-- A: INFORMASI UMUM -->
+<div style="margin-bottom:18px;">
+<div class="section-header">A. INFORMASI UMUM</div>
+<table style="width:100%;table-layout:fixed;">
+<colgroup><col style="width:25%"><col style="width:25%"><col style="width:25%"><col style="width:25%"></colgroup>
+<tr><td style="font-weight:600;background:#f8f6f2">Nama Satuan Pendidikan</td><td>${d.sekolah}</td><td style="font-weight:600;background:#f8f6f2">Nama Guru Penyusun</td><td>${d.penyusun}</td></tr>
+${currentMode==='kokur'?`<tr><td style="font-weight:600;background:#f8f6f2">Jenis Kokurikuler</td><td colspan="3"><strong>${d.jenisKokurikuler}</strong></td></tr>`:''}
+<tr><td style="font-weight:600;background:#f8f6f2">${currentMode==='kokur'?'Mata Pelajaran Terkait':'Mata Pelajaran'}</td><td>${d.mapel}</td><td style="font-weight:600;background:#f8f6f2">Kelas / Fase</td><td>${d.kelas} / ${d.fase}</td></tr>
+<tr><td style="font-weight:600;background:#f8f6f2">Semester</td><td>${d.semester}</td><td style="font-weight:600;background:#f8f6f2">Tahun Pelajaran</td><td>${d.tahunAjaran}</td></tr>
+<tr><td style="font-weight:600;background:#f8f6f2">Alokasi Waktu</td><td>${d.alokasi}</td><td style="font-weight:600;background:#f8f6f2">Tanggal Penyusunan</td><td>${tanggal}</td></tr>
+<tr><td style="font-weight:600;background:#fff3e0;color:#a96c1e">Topik / Focus Utama</td><td style="font-weight:600;color:#1a3a5c">${d.topikUtama||'—'}</td><td style="font-weight:600;background:#fff3e0;color:#a96c1e">Tahapan / Sub-Topik</td><td>${d.subTopik&&d.subTopik.length?d.subTopik.map((s,i)=>'('+(i+1)+') '+s).join(' | '):'—'}</td></tr>
+${d.produkBelajar?'<tr><td style="font-weight:600;background:#f8f6f2">Output / Bukti Belajar</td><td colspan="3">'+d.produkBelajar+'</td></tr>':''}
+</table>
+</div>
+
+<!-- B: IDENTIFIKASI -->
+<div style="margin-bottom:18px;">
+<div class="section-header">B. IDENTIFIKASI</div>
+<div class="subsection-header">B.1 Karakteristik Peserta Didik</div>
+<table style="width:100%;table-layout:fixed;"><colgroup><col style="width:25%"><col style="width:75%"></colgroup>${genPesertaDidik(d.target,d.mapel,d.kelas)}</table>
+<div class="subsection-header" style="margin-top:10px;">B.2 Cakupan Materi & Pembiasaan</div>
+<table style="width:100%;table-layout:fixed;"><colgroup><col style="width:25%"><col style="width:75%"></colgroup><tr><td style="font-weight:600;background:#f8f6f2">Faktual</td><td>${materi.faktual}</td></tr><tr><td style="font-weight:600;background:#f8f6f2">Konseptual</td><td>${materi.konseptual}</td></tr><tr><td style="font-weight:600;background:#f8f6f2">Prosedural</td><td>${materi.prosedural}</td></tr><tr><td style="font-weight:600;background:#f8f6f2">Metakognitif</td><td>${materi.metakognitif}</td></tr></table>
+<div class="subsection-header" style="margin-top:10px;">B.3 Dimensi Profil Pelajar Pancasila</div>
+<table style="width:100%;table-layout:fixed;"><colgroup><col style="width:30%"><col style="width:70%"></colgroup><tr><th>Dimensi</th><th>Deskripsi Penerapan</th></tr>${genDimensiDeskripsi(d.dimensi)}</table>
+</div>
+
+<!-- C: INDIKATOR KINERJA GURU -->
+<div style="margin-bottom:18px;">
+<div class="section-header">C. INDIKATOR KINERJA GURU (PENGELOLAAN KINERJA PMM)</div>
+${d.indikator.length
+  ? `<table style="width:100%;table-layout:fixed;"><colgroup><col style="width:30%"><col style="width:70%"></colgroup>
+      <tr><th>Indikator Kinerja</th><th>Fokus Perilaku yang Dipilih</th></tr>
+      ${genIndikatorOutput(d.indikator)}
+    </table>
+    ${semuaFokus.length ? `<div style="background:#fff8f0;border:1px solid #f0d5b0;border-radius:6px;padding:10px 14px;margin-top:8px;font-size:11pt;"><strong style="color:#a96c1e;">📌 Ringkasan Fokus Perilaku:</strong><div style="margin-top:6px;">${semuaFokus.map(f=>`<span class="fokus-badge">✓ ${f}</span>`).join(' ')}</div></div>` : ''}`
+  : `<div style="padding:10px 14px;color:#9ca3af;font-style:italic;">Indikator kinerja tidak dipilih.</div>`
+}
+</div>
+
+<!-- D: DESAIN PEMBELAJARAN -->
+<div style="margin-bottom:18px;">
+<div class="section-header">D. DESAIN PEMBELAJARAN</div>
+<table style="width:100%;table-layout:fixed;"><colgroup><col style="width:25%"><col style="width:25%"><col style="width:25%"><col style="width:25%"></colgroup>
+<tr><td style="font-weight:600;background:#f8f6f2">Capaian / Tujuan</td><td colspan="3"><strong>CP:</strong> ${d.cp}<br><br><strong>TP:</strong> ${d.tp}</td></tr>
+<tr><td style="font-weight:600;background:#f8f6f2">Lintas Disiplin Ilmu</td><td colspan="3">${genLintasDisiplin(d.mapel)}</td></tr>
+<tr><td style="font-weight:600;background:#f8f6f2">Model Pembelajaran</td><td>${d.model.join('<br>')}</td><td style="font-weight:600;background:#f8f6f2">Metode</td><td>${d.metode.join('<br>')}</td></tr>
+<tr><td style="font-weight:600;background:#f8f6f2">Sarana Prasarana</td><td colspan="3">${d.sarana.join(' | ')}</td></tr>
+<tr><td style="font-weight:600;background:#f8f6f2">Target Peserta Didik</td><td colspan="3">${d.target.join(', ')}</td></tr>
+<tr><td style="font-weight:600;background:#f8f6f2">Kemitraan & Lingkungan</td><td colspan="3"><strong>Kemitraan:</strong> ${genKemitraan(d.mapel)}<br><strong>Lingkungan:</strong> ${genLingkungan(d.sarana)}</td></tr>
+</table>
+</div>
+
+<!-- E: PETA PENGALAMAN -->
+<div style="margin-bottom:18px;">
+<div class="section-header">E. PETA PENGALAMAN BELAJAR</div>
+<table style="width:100%;table-layout:fixed;"><colgroup><col style="width:25%"><col style="width:75%"></colgroup><tr><th>Dimensi</th><th>Deskripsi Pengalaman</th></tr>
+<tr><td><strong>🔵 Mengalami</strong></td><td>${peta.mengalami}</td></tr>
+<tr><td><strong>🔴 Bertanya</strong></td><td>${peta.bertanya}</td></tr>
+<tr><td><strong>🟡 Mengeksplorasi</strong></td><td>${peta.mengeksplorasi}</td></tr>
+<tr><td><strong>🟢 Merefleksi</strong></td><td>${peta.merefleksi}</td></tr>
+<tr><td><strong>🟣 Mengaplikasikan</strong></td><td>${peta.mengaplikasikan}</td></tr>
+</table>
+</div>
+
+<!-- F: LANGKAH PEMBELAJARAN -->
+<div style="margin-bottom:18px;">
+<div class="section-header">F. LANGKAH-LANGKAH KEGIATAN</div>
+${semuaFokus.length?`<div style="background:#eef3f9;border-left:4px solid #1a3a5c;padding:8px 12px;margin-bottom:10px;font-size:11pt;"><strong>📌 Fokus Perilaku Terintegrasi:</strong> ${semuaFokus.map(f=>`<span class="fokus-badge">${f}</span>`).join(' ')}</div>`:''}
+<div class="subsection-header">F.1 Pendahuluan</div>
+<table style="width:100%;table-layout:fixed;"><colgroup><col style="width:25%"><col style="width:75%"></colgroup><tr><td style="font-weight:600;background:#f8f6f2">Awal Sesi</td><td>${genFokusPeakePendahuluan(d.indikator, d.mapel, d.tp, d.kelas)}</td></tr></table>
+<div class="subsection-header" style="margin-top:10px;">F.2 Kegiatan Inti</div>
+<table style="width:100%;table-layout:fixed;"><colgroup><col style="width:25%"><col style="width:75%"></colgroup><tr><th>Fase</th><th>Deskripsi Kegiatan</th></tr>
+<tr><td style="background:#eef3f9"><strong>Memahami</strong></td><td>${inti.memahami}</td></tr>
+<tr><td style="background:#eef3f9"><strong>Mengaplikasi</strong></td><td>${inti.mengaplikasi}</td></tr>
+<tr><td style="background:#eef3f9"><strong>Merefleksi</strong></td><td>${inti.merefleksi}</td></tr>
+</table>
+<div class="subsection-header" style="margin-top:10px;">F.3 Penutup</div>
+<table style="width:100%;table-layout:fixed;"><colgroup><col style="width:100%"></colgroup><tr><td>${genPenutup(d.mapel,d.tp)}</td></tr></table>
+</div>
+
+<!-- G: ASESMEN -->
+<div style="margin-bottom:18px;">
+<div class="section-header">G. ASESMEN PEMBELAJARAN</div>
+<div class="subsection-header">G.1 Asesmen Diagnostik / Awal</div>
+<table style="width:100%;table-layout:fixed;"><colgroup><col style="width:10%"><col style="width:90%"></colgroup><tr><th>No.</th><th>Pertanyaan</th></tr>${genAsesmenAwal(d.mapel).map((s,i)=>`<tr><td style="text-align:center">${i+1}</td><td>${s}</td></tr>`).join('')}</table>
+<div class="subsection-header" style="margin-top:10px;">G.2 Asesmen Formatif & Rubrik Pengamatan</div>
+<div style="margin-top:6px;">${genRubrikFormatif()}</div>
+<div class="subsection-header" style="margin-top:10px;">G.3 Asesmen Sumatif / Penilaian Akhir</div>
+<div style="margin-top:6px;">${genRubrikSumatif()}</div>
+<div class="subsection-header" style="margin-top:10px;">G.4 Program Remedial dan Pengayaan</div>
+<table style="width:100%;table-layout:fixed;"><colgroup><col style="width:25%"><col style="width:75%"></colgroup><tr><th style="width:25%">Program</th><th>Keterangan</th></tr><tr><td><strong>Pendampingan / Remedial</strong></td><td>${remedial.remedial}</td></tr><tr><td><strong>Pengembangan / Pengayaan</strong></td><td>${remedial.pengayaan}</td></tr></table>
+</div>
+
+<!-- H: DIFERENSIASI -->
+<div style="margin-bottom:18px;">
+<div class="section-header">H. DIFERENSIASI PEMBELAJARAN</div>
+<table style="width:100%;table-layout:fixed;"><colgroup><col style="width:25%"><col style="width:75%"></colgroup><tr><th>Aspek</th><th>Strategi</th></tr><tr><td style="background:#eef3f9"><strong>Konten</strong></td><td>${diferensiasi.konten}</td></tr><tr><td style="background:#eef3f9"><strong>Proses</strong></td><td>${diferensiasi.proses}</td></tr><tr><td style="background:#eef3f9"><strong>Produk</strong></td><td>${diferensiasi.produk}</td></tr></table>
+</div>
+
+<!-- I: LAMPIRAN -->
+<div style="margin-bottom:18px;">
+<div class="section-header">I. LAMPIRAN</div>
+<div class="subsection-header">Lampiran 1 — Bahan Bacaan / Ringkasan Pembiasaan</div>
+<table style="width:100%;table-layout:fixed;"><colgroup><col style="width:100%"></colgroup><tr><td>${materi.faktual}<br><br><strong>Konsep Utama:</strong> ${materi.konseptual}</td></tr></table>
+<div class="subsection-header" style="margin-top:10px;">Lampiran 2 — Lembar Kerja / Jurnal Siswa (LKPD)</div>
+<table style="width:100%;table-layout:fixed;"><colgroup><col style="width:25%"><col style="width:75%"></colgroup><tr><td style="font-weight:600;background:#f8f6f2">Judul Aktivitas</td><td>Eksplorasi & Aksi: ${d.topikUtama}</td></tr><tr><td style="font-weight:600;background:#f8f6f2">Tujuan</td><td>${d.tp}</td></tr><tr><td style="font-weight:600;background:#f8f6f2">Petunjuk</td><td>1. Lakukan dengan penuh tanggung jawab<br>2. Catat / dokumentasikan setiap aktivitas<br>3. Diskusikan dengan guru & teman</td></tr></table>
+<div class="subsection-header" style="margin-top:10px;">Lampiran 3 — Pertanyaan Refleksi & HOTS</div>
+<table style="width:100%;table-layout:fixed;"><colgroup><col style="width:10%"><col style="width:90%"></colgroup>${hots.map((s,i)=>`<tr><td style="text-align:center;font-weight:600">${i+1}</td><td>${s}</td></tr>`).join('')}</table>
+<div class="subsection-header" style="margin-top:10px;">Lampiran 4 — Daftar Pustaka</div>
+<table style="width:100%;table-layout:fixed;"><colgroup><col style="width:10%"><col style="width:90%"></colgroup>${genPustaka(d.mapel).map((p,i)=>`<tr><td style="text-align:center">${i+1}.</td><td>${p}</td></tr>`).join('')}</table>
+</div>
+
+<!-- TANDA TANGAN (BEBAS KOTAK GARIS DI WORD) -->
+<table class="ttd-tabel-bersih">
+<colgroup><col style="width:50%"><col style="width:50%"></colgroup>
+<tr>
+<td style="text-align:center;">
+  <div style="margin-bottom:50px;font-size:11pt;">Mengetahui,<br>Kepala ${d.sekolah}</div>
+  <div style="border-top:1.5px solid #333;padding-top:4px;display:inline-block;min-width:180px;">
+    <strong>${d.kepsek}</strong><br><span style="font-size:10pt">NIP. ${d.nipKepsek}</span>
+  </div>
+</td>
+<td style="text-align:center;">
+  <div style="margin-bottom:50px;font-size:11pt;">Guru Penyusun</div>
+  <div style="border-top:1.5px solid #333;padding-top:4px;display:inline-block;min-width:180px;">
+    <strong>${d.penyusun}</strong><br><span style="font-size:10pt">NIP. ${d.nipGuru}</span>
+  </div>
+</td>
+</tr>
+</table>
+
+</div>`;
+
+      document.getElementById('rpmContent').innerHTML = html;
+      document.getElementById('formSection').style.display='none';
+      document.getElementById('output').style.display='block';
+      stopLoading();
+      window.scrollTo({top:0,behavior:'smooth'});
+    } catch(e) {
+      stopLoading();
+      alert('Terjadi kesalahan: '+e.message);
+      console.error(e);
+    }
+  }, 1200);
+}
+
+// ACTIONS
+function backToForm() {
+  document.getElementById('output').style.display='none';
+  document.getElementById('formSection').style.display='block';
+  window.scrollTo({top:0});
+}
+function copyAndOpenGoogleDocs() {
+  const content = document.getElementById('rpmContent').innerText;
+  navigator.clipboard.writeText(content).then(() => {
+    alert('✅ Dokumen telah disalin!\n\nGoogle Dokumen akan dibuka. Buat dokumen baru, lalu tekan Ctrl+V untuk menempel.');
+    window.open('https://docs.google.com/document/create','_blank');
+  }).catch(() => alert('Gagal menyalin. Silakan copy manual.'));
+}
+
+// EKSPOR KE WORD DENGAN KUNCI LEBAR TABEL & LAYOUT KERTAS A4
+function downloadWord() {
+  const content = document.getElementById('rpmContent').innerHTML;
+  const d = getData();
+
+  const wordDocumentHeader = `
+    <html xmlns:o='urn:schemas-microsoft-com:office:office' 
+          xmlns:w='urn:schemas-microsoft-com:office:word' 
+          xmlns='http://www.w3.org/TR/REC-html40'>
+    <head>
+      <meta charset='utf-8'>
+      <title>Dokumen RPM / Modul Ajar</title>
+      <!--[if gte mso 9]>
+      <xml>
+        <w:WordDocument>
+          <w:View>Print</w:View>
+          <w:Zoom>100</w:Zoom>
+          <w:DoNotOptimizeForBrowser/>
+        </w:WordDocument>
+      </xml>
+      <![endif]-->
+      <style>
+        @page WordSection1 {
+          size: 21.0cm 29.7cm; /* A4 */
+          margin: 2.0cm 2.0cm 2.0cm 2.0cm;
+          mso-header-margin: 35.4pt;
+          mso-footer-margin: 35.4pt;
+          mso-paper-source: 0;
+        }
+        div.WordSection1 {
+          page: WordSection1;
+        }
+        body {
+          font-family: 'Times New Roman', serif;
+          font-size: 11pt;
+          line-height: 1.4;
+          color: #000000;
+        }
+        table {
+          width: 100% !important;
+          border-collapse: collapse !important;
+          margin-bottom: 10pt !important;
+          table-layout: fixed !important;
+        }
+        td, th {
+          border: 1pt solid #666666 !important;
+          padding: 5pt 7pt !important;
+          vertical-align: top !important;
+          word-wrap: break-word !important;
+          font-size: 10.5pt !important;
+        }
+        th {
+          background-color: #1a3a5c !important;
+          color: #ffffff !important;
+          font-weight: bold !important;
+        }
+        .section-header {
+          background-color: #1a3a5c !important;
+          color: #ffffff !important;
+          padding: 6pt 10pt !important;
+          font-weight: bold !important;
+          font-size: 11pt !important;
+          margin-top: 10pt !important;
+        }
+        .subsection-header {
+          background-color: #e8f0f8 !important;
+          color: #1a3a5c !important;
+          padding: 5pt 8pt !important;
+          font-weight: bold !important;
+          font-size: 10.5pt !important;
+          border-left: 3pt solid #1a3a5c !important;
+        }
+        .fokus-badge {
+          display: inline-block;
+          padding: 2pt 5pt;
+          background-color: #fff3e0;
+          border: 1pt solid #c8832a;
+          color: #a96c1e;
+          font-size: 9.5pt;
+          font-weight: bold;
+        }
+        ol, ul {
+          margin-top: 3pt;
+          margin-bottom: 3pt;
+          padding-left: 20pt;
+        }
+        li {
+          margin-bottom: 2pt;
+        }
+        /* CSS AGAR TABEL TANDA TANGAN BERSIH DI WORD */
+        .ttd-tabel-bersih {
+          width: 100% !important;
+          border-collapse: collapse !important;
+          border: none !important;
+          margin-top: 20pt !important;
+        }
+        .ttd-tabel-bersih td {
+          border: none !important;
+          background: transparent !important;
+          padding: 10pt !important;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="WordSection1">
+        ${content}
+      </div>
+    </body>
+    </html>
+  `;
+
+  const blob = new Blob(['\ufeff' + wordDocumentHeader], { type: 'application/msword' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Dokumen_${d.mapel.replace(/\s+/g, '_')}_Kelas${d.kelas}.doc`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// TOPIK MATERI
+var subTopikList = [];
+function addSubTopik() {
+  var inp = document.getElementById('subTopikInput');
+  var val = inp.value.trim();
+  if (!val || subTopikList.indexOf(val) !== -1) { inp.value=''; return; }
+  subTopikList.push(val);
+  inp.value='';
+  renderSubTopik();
+  updateTopikPreview();
+}
+function removeSubTopik(i) {
+  subTopikList.splice(i,1);
+  renderSubTopik();
+  updateTopikPreview();
+}
+function renderSubTopik() {
+  var w = document.getElementById('subTopikTags');
+  if (!w) return;
+  w.innerHTML = subTopikList.map(function(v,i){
+    return '<span style="display:inline-flex;align-items:center;gap:5px;padding:5px 10px;background:#e8f0f8;border:1.5px solid #1a3a5c;border-radius:20px;font-size:12px;color:#1a3a5c;font-weight:500;">'
+      +v+'<button onclick="removeSubTopik('+i+')" style="background:none;border:none;color:#1a3a5c;cursor:pointer;font-size:14px;font-weight:700;line-height:1;padding:0 2px;">x</button></span>';
+  }).join('');
+}
+function updateTopikPreview() {
+  var tEl=document.getElementById('topikUtama'), pEl=document.getElementById('produkBelajar'), pr=document.getElementById('topikPreview');
+  if (!pr) return;
+  var topik=tEl?tEl.value.trim():'', produk=pEl?pEl.value.trim():'';
+  if (!topik && !subTopikList.length && !produk) { pr.style.display='none'; return; }
+  pr.style.display='block';
+  var h='';
+  if(topik) h+='<strong>Topik / Program:</strong> '+topik+'<br>';
+  if(subTopikList.length) h+='<strong>Tahapan/Langkah:</strong> '+subTopikList.join(' &rsaquo; ')+'<br>';
+  if(produk) h+='<strong>Output:</strong> '+produk;
+  pr.innerHTML=h;
+}
+(function(){
+  function init(){
+    var inp=document.getElementById('subTopikInput');
+    if(inp) inp.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();addSubTopik();}});
+    ['topikUtama','produkBelajar'].forEach(function(id){
+      var el=document.getElementById(id); if(el) el.addEventListener('input',updateTopikPreview);
+    });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
+})();
+
+</script>
+</body>
+</html>
