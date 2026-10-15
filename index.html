@@ -148,7 +148,7 @@
   .step-badge { width:28px; height:28px; border-radius:50%; background:#1a3a5c; color:white; font-size:13px; font-weight:600; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
   .divider { border:none; border-top:1px solid #e5e0d8; margin:8px 0; }
   @media print { .no-print { display:none !important; } body { background:white; } }
-  
+
   /* CSS TAMBAHAN KHUSUS TANDA TANGAN BERSIH TANPA KOTAK */
   .ttd-tabel-bersih { width: 100%; margin-top: 30px; border-collapse: collapse; border: none !important; }
   .ttd-tabel-bersih td { border: none !important; background: transparent !important; padding: 10px; vertical-align: top; }
@@ -168,7 +168,7 @@
         <p style="color:#8db4d4;font-size:13px;margin-top:2px;">Generator RPM (Rencana Pembelajaran Mendalam) — Kurikulum Merdeka</p>
       </div>
     </div>
-    <p style="color:#c2d8ec;font-size:14px;max-width:750px;line-height:1.7;">Hasilkan dokumen RPM lengkap, terstruktur, dan siap cetak secara instan untuk efisiensi mengajar guru SDN Bugoharjo.</p>
+    <p style="color:#c2d8ec;font-size:14px;max-width:750px;line-height:1.7;">Hasilkan dokumen RPM lengkap, terstruktur, dan siap cetak secara otomatis untuk semua jenjang dan mata pelajaran.</p>
     
     <!-- PROFIL & MODE SWITCH -->
     <div style="margin-top:20px;display:flex;flex-wrap:wrap;align-items:center;gap:16px;">
@@ -176,7 +176,7 @@
         <img src="img/profil.jpeg" style="width:34px;height:34px;border-radius:50%;object-fit:cover;flex-shrink:0;" alt="Foto Profil">      
         <div>
           <div style="font-size:11px;color:#8db4d4;letter-spacing:0.06em;text-transform:uppercase;">Dikembangkan oleh</div>
-          <div style="font-size:14px;font-weight:600;color:white;margin-top:1px;">VALENTIENA PRASTIKA PUTRIE</div>
+          <div style="font-size:14px;font-weight:600;color:white;margin-top:1px;">Valentiena Prastika Putrie</div>
           <div style="font-size:11px;color:#a0c0d8;">Admin IT SDN BUGOHARJO</div>
         </div>
       </div>
@@ -224,7 +224,7 @@
       <h2 style="font-size:18px;color:#1a3a5c;">Identitas Dokumen</h2>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
-      <div class="field-wrap" id="fw_penyusun"><label class="label required">Nama Guru (Penyusun)</label><input class="input-field" id="penyusun" type="text" placeholder="Contoh: VALENTIENA PRASTIKA PUTRIE, S.Kom."><div class="error-msg">Nama penyusun wajib diisi.</div></div>
+      <div class="field-wrap" id="fw_penyusun"><label class="label required">Nama Guru (Penyusun)</label><input class="input-field" id="penyusun" type="text" placeholder="Contoh: Valentiena Prastika Putrie, S.Kom."><div class="error-msg">Nama penyusun wajib diisi.</div></div>
       <div class="field-wrap" id="fw_sekolah"><label class="label required">Nama Sekolah</label><input class="input-field" id="sekolah" type="text" placeholder="Contoh: SDN BUGOHARJO"><div class="error-msg">Nama sekolah wajib diisi.</div></div>
       <div class="field-wrap" id="fw_nipGuru"><label class="label">NIP Guru</label><input class="input-field" id="nipGuru" type="text" placeholder="Contoh: 1234567890"></div>
       <div class="field-wrap" id="fw_kepsek"><label class="label">Nama Kepala Sekolah</label><input class="input-field" id="kepsek" type="text" placeholder="Contoh: Ana Mumtahana, M.Pd."></div>
@@ -447,8 +447,8 @@
 
     <div id="indikatorContainer">
       <div class="indikator-card" id="ikCard_1">
-        <div class="indikator-header" onclick="toggleIndikator(1)">
-          <input type="checkbox" id="ik_1" value="Kualitas Pembelajaran" onchange="toggleFokus(1)">
+        <div class="indikator-header" onclick="toggleIndikator(event, 1)">
+          <input type="checkbox" id="ik_1" value="Kualitas Pembelajaran" onchange="toggleFokus(1)" onclick="event.stopPropagation(); toggleFokus(1)">
           <div>
             <div class="indikator-label">1. Kualitas Pembelajaran</div>
             <div class="indikator-sub">Kemampuan guru menciptakan proses pembelajaran yang bermakna, menarik, dan efektif</div>
@@ -467,8 +467,8 @@
       </div>
 
       <div class="indikator-card" id="ikCard_2">
-        <div class="indikator-header" onclick="toggleIndikator(2)">
-          <input type="checkbox" id="ik_2" value="Iklim Belajar yang Aman dan Nyaman" onchange="toggleFokus(2)">
+        <div class="indikator-header" onclick="toggleIndikator(event, 2)">
+          <input type="checkbox" id="ik_2" value="Iklim Belajar yang Aman dan Nyaman" onchange="toggleFokus(2)" onclick="event.stopPropagation(); toggleFokus(2)">
           <div>
             <div class="indikator-label">2. Iklim Belajar yang Aman dan Nyaman</div>
             <div class="indikator-sub">Kemampuan guru membangun lingkungan kelas yang positif, inklusif, dan mendukung</div>
@@ -487,8 +487,8 @@
       </div>
 
       <div class="indikator-card" id="ikCard_3">
-        <div class="indikator-header" onclick="toggleIndikator(3)">
-          <input type="checkbox" id="ik_3" value="Kompetensi dan Karakter Peserta Didik" onchange="toggleFokus(3)">
+        <div class="indikator-header" onclick="toggleIndikator(event, 3)">
+          <input type="checkbox" id="ik_3" value="Kompetensi dan Karakter Peserta Didik" onchange="toggleFokus(3)" onclick="event.stopPropagation(); toggleFokus(3)">
           <div>
             <div class="indikator-label">3. Kompetensi dan Karakter Peserta Didik</div>
             <div class="indikator-sub">Kemampuan guru mengembangkan kompetensi akademik dan karakter peserta didik secara terpadu</div>
@@ -507,8 +507,8 @@
       </div>
 
       <div class="indikator-card" id="ikCard_4">
-        <div class="indikator-header" onclick="toggleIndikator(4)">
-          <input type="checkbox" id="ik_4" value="Refleksi dan Peningkatan Kualitas Pembelajaran" onchange="toggleFokus(4)">
+        <div class="indikator-header" onclick="toggleIndikator(event, 4)">
+          <input type="checkbox" id="ik_4" value="Refleksi dan Peningkatan Kualitas Pembelajaran" onchange="toggleFokus(4)" onclick="event.stopPropagation(); toggleFokus(4)">
           <div>
             <div class="indikator-label">4. Refleksi dan Peningkatan Kualitas Pembelajaran</div>
             <div class="indikator-sub">Kemampuan guru merefleksi dan terus meningkatkan praktik mengajarnya</div>
@@ -526,8 +526,8 @@
       </div>
 
       <div class="indikator-card" id="ikCard_5">
-        <div class="indikator-header" onclick="toggleIndikator(5)">
-          <input type="checkbox" id="ik_5" value="Perencanaan Pembelajaran yang Efektif" onchange="toggleFokus(5)">
+        <div class="indikator-header" onclick="toggleIndikator(event, 5)">
+          <input type="checkbox" id="ik_5" value="Perencanaan Pembelajaran yang Efektif" onchange="toggleFokus(5)" onclick="event.stopPropagation(); toggleFokus(5)">
           <div>
             <div class="indikator-label">5. Perencanaan Pembelajaran yang Efektif</div>
             <div class="indikator-sub">Kemampuan guru merancang pembelajaran yang terstruktur, kontekstual, dan berpusat pada peserta didik</div>
@@ -545,8 +545,8 @@
       </div>
 
       <div class="indikator-card" id="ikCard_6">
-        <div class="indikator-header" onclick="toggleIndikator(6)">
-          <input type="checkbox" id="ik_6" value="Keterlibatan Orang Tua dan Masyarakat" onchange="toggleFokus(6)">
+        <div class="indikator-header" onclick="toggleIndikator(event, 6)">
+          <input type="checkbox" id="ik_6" value="Keterlibatan Orang Tua dan Masyarakat" onchange="toggleFokus(6)" onclick="event.stopPropagation(); toggleFokus(6)">
           <div>
             <div class="indikator-label">6. Keterlibatan Orang Tua dan Masyarakat</div>
             <div class="indikator-sub">Kemampuan guru membangun kemitraan dengan orang tua dan komunitas untuk mendukung pembelajaran</div>
@@ -606,7 +606,7 @@
       <img src="img/profil.jpeg" style="width:42px;height:42px;border-radius:50%;object-fit:cover;flex-shrink:0;" alt="Foto Profil">      
       <div style="text-align:left;">
         <div style="font-size:10px;color:#9ca3af;letter-spacing:0.08em;text-transform:uppercase;">Generator Modul Ajar — Kurikulum Merdeka</div>
-        <div style="font-size:14px;font-weight:600;color:#1a3a5c;margin-top:1px;">VALENTIENA PRASTIKA PUTRIE</div>
+        <div style="font-size:14px;font-weight:600;color:#1a3a5c;margin-top:1px;">Valentiena Prastika Putrie</div>
         <div style="font-size:11px;color:#c8832a;font-weight:500;">Admin IT SDN BUGOHARJO</div>
       </div>
     </div>
@@ -828,8 +828,9 @@ function renderCustomTags(type, tagId) {
   document.getElementById(id)?.addEventListener('keydown', e => { if(e.key==='Enter'){ e.preventDefault(); addCustom(t); } });
 });
 
-// INDIKATOR KINERJA LOGIC
-function toggleIndikator(n) {
+// INDIKATOR KINERJA LOGIC (PERBAIKAN CENTANG)
+function toggleIndikator(e, n) {
+  if (e.target.tagName === 'INPUT') return; // Mencegah bentrokan jika checkbox diklik langsung
   const cb = document.getElementById('ik_'+n);
   cb.checked = !cb.checked;
   toggleFokus(n);
@@ -1133,8 +1134,8 @@ function generateRPM() {
       const tanggal = new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
       const semuaFokus = d.indikator.flatMap(ik=>ik.fokus);
 
-      let judulUtama = 'MODUL INTRAKURIKULER';
-      let subJudul = 'Pembelajaran Berdiferensiasi — Kurikulum Merdeka';
+      let judulUtama = 'RENCANA PEMBELAJARAN MENDALAM';
+      let subJudul = 'Kurikulum Merdeka — Pembelajaran Berdiferensiasi';
 
       if (currentMode === 'kokur') {
         judulUtama = 'MODUL KOKURIKULER — ' + d.jenisKokurikuler.toUpperCase();
