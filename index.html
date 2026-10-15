@@ -1134,8 +1134,8 @@ function generateRPM() {
       const tanggal = new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
       const semuaFokus = d.indikator.flatMap(ik=>ik.fokus);
 
-      let judulUtama = 'RENCANA PEMBELAJARAN MENDALAM';
-      let subJudul = 'Kurikulum Merdeka — Pembelajaran Berdiferensiasi';
+      let judulUtama = 'MODUL INTRAKURIKULER';
+      let subJudul = 'Pembelajaran Berdiferensiasi — Kurikulum Merdeka';
 
       if (currentMode === 'kokur') {
         judulUtama = 'MODUL KOKURIKULER — ' + d.jenisKokurikuler.toUpperCase();
